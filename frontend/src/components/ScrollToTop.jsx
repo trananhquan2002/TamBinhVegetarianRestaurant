@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react'
 import { FaArrowUp } from 'react-icons/fa'
+import { useLocation } from 'react-router-dom'
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
+      if (window.scrollY > 300) {
         setIsVisible(true)
       } else {
         setIsVisible(false)
@@ -22,7 +27,7 @@ export default function ScrollToTop() {
   return (
     <>
       {isVisible && (
-        <button onClick={scrollToTop} className="fixed bottom-8 right-8 z-50 p-4 bg-orange-600 text-white rounded-full shadow-2xl hover:bg-green-700 hover:scale-110 active:scale-90 transition-all duration-300 group cursor-pointer" aria-label="Scroll to top">
+        <button onClick={scrollToTop} className="fixed bottom-24 right-6 z-99 p-4 bg-[#FE2C55] text-white rounded-full shadow-lg active:scale-90 transition-all duration-300 group cursor-pointer border-2 border-white" aria-label="Scroll to top">
           <FaArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform duration-300" />
         </button>
       )}

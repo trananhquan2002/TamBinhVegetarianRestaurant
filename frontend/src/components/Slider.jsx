@@ -72,7 +72,7 @@ export default function Slider() {
           </SwiperSlide>
         ))}
       </Swiper>
-      <style jsx global>{`
+      <style jsx="true" global="true">{`
         .swiper-pagination-bullet {
           background: #fff !important;
           opacity: 0.5;

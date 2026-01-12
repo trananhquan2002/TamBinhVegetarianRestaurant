@@ -55,20 +55,29 @@ export default function CheckoutPage() {
   }
   useEffect(() => {
     const fetchLastInfo = async () => {
-      if (user?._id) {
+      const userId = user?._id || user?.id
+      const token = user?.token
+      if (userId && token) {
         try {
-          const res = await fetch(`/api/orders/last-info/${user._id}`)
-          const data = await res.json()
-          if (res.ok && data.address) {
-            setCustomerName(data.customerName)
-            setPhone(data.phone)
-            const savedLat = data.address.lat
-            const savedLng = data.address.lng
-            const matchedArea = HA_NOI_AREAS.find((a) => a.lat === savedLat && a.lng === savedLng)
-            if (matchedArea) {
-              setSelectedArea(matchedArea)
+          const res = await fetch(`/api/orders/last-info/${userId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          if (res.ok) {
+            const data = await res.json()
+            if (data) {
+              if (data.customerName) setCustomerName(data.customerName)
+              if (data.phone) setPhone(data.phone)
+              if (data.address) {
+                const matchedArea = HA_NOI_AREAS.find((a) => (a.lat === data.address.lat && a.lng === data.address.lng) || a.name === data.address.area)
+                if (matchedArea) setSelectedArea(matchedArea)
+                const detail = data.address.detail ? data.address.detail.split(',')[0] : ''
+                setAddressDetail(detail)
+              }
             }
-            setAddressDetail(data.address.detail.split(',')[0])
           }
         } catch (error) {
           console.log('Chưa có thông tin cũ để lấy')
@@ -117,7 +126,7 @@ export default function CheckoutPage() {
       const result = await res.json()
       if (res.ok) {
         clearCart()
-        navigate('/order-success', { state: { order: result.order } }) // sau khi thành công truyền state đi
+        navigate('/order-success', { state: { order: result.order } })
       } else {
         console.error('Lỗi: ' + result.message)
       }
@@ -126,71 +135,93 @@ export default function CheckoutPage() {
     }
   }
   return (
-    <div className="bg-[#F8F8F8] min-h-screen pb-32">
-      <div className="bg-white p-4 border-b-4 border-dashed border-red-100">
-        <h4 className="font-bold text-xs text-red-600 mb-4 flex items-center gap-2 uppercase tracking-tight">
-          <FiMapPin /> Địa chỉ nhận hàng (Hà Nội)
+    <div className="bg-[#F5F5F5] min-h-screen pb-40">
+      {/* Header Section - Địa chỉ */}
+      <div className="bg-white p-5 rounded-b-3xl shadow-sm border-b-4 border-dashed border-red-50">
+        <h4 className="font-black text-xs text-[#FE2C55] mb-5 flex items-center gap-2 uppercase tracking-widest">
+          <FiMapPin className="text-base" /> Địa chỉ nhận hàng (Hà Nội)
         </h4>
+
         <div className="space-y-4">
-          <div className="flex gap-4">
-            <input className="flex-1 border-b py-2 text-sm outline-none focus:border-red-500" placeholder="Tên người nhận" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-            <input className="flex-1 border-b py-2 text-sm outline-none focus:border-red-500" placeholder="Số điện thoại" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          </div>
-          <select
-            className="w-full border-b py-2 text-sm outline-none bg-white"
-            value={selectedArea?.name}
-            onChange={(e) => {
-              const area = HA_NOI_AREAS.find((a) => a.name === e.target.value)
-              setSelectedArea(area)
-            }}>
-            <option value="">-- Chọn Quận/Huyện/Thị xã --</option>
-            {HA_NOI_AREAS.map((area) => (
-              <option key={area.name} value={area.name}>
-                {area.name}
-              </option>
-            ))}
-          </select>
-          <input className="w-full border-b py-2 text-sm outline-none focus:border-red-500" placeholder="Số nhà, tên đường, tòa nhà..." value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)} />
-        </div>
-      </div>
-      <div className="mt-2 bg-white p-4">
-        <div className="flex items-center gap-2 mb-4 border-l-4 border-black pl-2">
-          <span className="text-sm font-bold uppercase italic">Tâm Bình Restaurant</span>
-        </div>
-        {cart.map((item) => (
-          <div key={item.id} className="flex gap-3 mb-4">
-            <img src={item.image} className="w-20 h-20 rounded object-cover border" />
-            <div className="flex-1 flex flex-col justify-between">
-              <p className="text-sm font-medium line-clamp-2">{item.title}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-red-600 font-bold">{item.price.toLocaleString()}đ</span>
-                <span className="text-gray-400 text-xs font-bold">x{item.quantity}</span>
-              </div>
+          {/* Tên & SĐT trên 2 dòng để dễ bấm trên Mobile */}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="relative">
+              <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Tên người nhận" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+            </div>
+            <div className="relative">
+              <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số điện thoại" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
           </div>
-        ))}
+
+          <div className="relative">
+            <select
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none appearance-none cursor-pointer focus:border-[#FE2C55] shadow-sm"
+              value={selectedArea?.name || ''}
+              onChange={(e) => {
+                const area = HA_NOI_AREAS.find((a) => a.name === e.target.value)
+                setSelectedArea(area)
+              }}>
+              <option value="">-- Chọn Quận/Huyện/Thị xã --</option>
+              {HA_NOI_AREAS.map((area) => (
+                <option key={area.name} value={area.name}>
+                  {area.name}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">▼</div>
+          </div>
+
+          <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số nhà, tên đường, tòa nhà..." value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)} />
+        </div>
       </div>
-      <div className="mt-2 bg-white p-4 space-y-4">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500 flex items-center gap-2">
-            <FiTruck /> Vận chuyển ({distance} km)
-          </span>
-          <span className={shippingFee === 0 ? 'text-green-600 font-bold' : 'font-bold'}>{shippingFee === 0 ? 'MIỄN PHÍ' : `${shippingFee.toLocaleString()}đ`}</span>
+
+      {/* Sản phẩm Section */}
+      <div className="mt-3 bg-white p-5 rounded-3xl shadow-sm mx-2">
+        <div className="flex items-center gap-2 mb-5 border-l-4 border-[#FE2C55] pl-3">
+          <span className="text-sm font-black uppercase italic tracking-tighter">Tâm Bình Restaurant</span>
         </div>
-        <div className="flex justify-between text-sm border-t pt-4">
-          <span className="text-gray-500 flex items-center gap-2">
-            <FiCreditCard /> Thanh toán
-          </span>
-          <span className="font-bold">Tiền mặt (COD)</span>
+
+        <div className="space-y-5">
+          {cart.map((item) => (
+            <div key={item.id} className="flex gap-4 items-start">
+              <img src={item.image} className="w-20 h-20 rounded-2xl object-cover border border-gray-100 shadow-sm" alt={item.title} />
+              <div className="flex-1 min-w-0 py-1">
+                <p className="text-sm font-bold text-gray-800 line-clamp-2 leading-tight mb-2">{item.title}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-[#FE2C55] font-black text-base">{item.price.toLocaleString()}đ</span>
+                  <span className="bg-gray-100 text-gray-500 text-[10px] px-2 py-1 rounded-lg font-black">x{item.quantity}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex items-center justify-between z-50">
-        <div>
-          <p className="text-[10px] text-gray-400 font-bold">TỔNG THANH TOÁN</p>
-          <p className="text-[#FE2C55] font-black text-2xl">{totalAmount.toLocaleString()}đ</p>
+
+      {/* Info Section */}
+      <div className="mt-3 bg-white p-5 rounded-3xl shadow-sm mx-2 space-y-4">
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-500 font-medium flex items-center gap-2">
+            <FiTruck className="text-lg text-blue-500" /> Phí vận chuyển ({distance} km)
+          </span>
+          <span className={shippingFee === 0 ? 'text-green-600 font-black' : 'font-black text-gray-800'}>{shippingFee === 0 ? 'MIỄN PHÍ' : `${shippingFee.toLocaleString()}đ`}</span>
         </div>
-        <button onClick={handlePlaceOrder} className="bg-[#FE2C55] text-white px-12 py-3.5 rounded-sm font-black text-sm active:opacity-80 transition-all uppercase cursor-pointer">
-          Đặt hàng
+
+        <div className="flex justify-between items-center text-sm border-t border-gray-50 pt-4">
+          <span className="text-gray-500 font-medium flex items-center gap-2">
+            <FiCreditCard className="text-lg text-orange-500" /> Phương thức thanh toán
+          </span>
+          <span className="font-black text-gray-800">Tiền mặt (COD)</span>
+        </div>
+      </div>
+
+      {/* Bottom Bar - Sticky */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-100 p-4 pb-8 flex items-center justify-between z-50">
+        <div className="pl-2">
+          <p className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Tổng cộng</p>
+          <p className="text-[#FE2C55] font-black text-2xl tracking-tighter">{totalAmount.toLocaleString()}đ</p>
+        </div>
+        <button onClick={handlePlaceOrder} className="bg-[#FE2C55] text-white px-10 py-4 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-lg shadow-red-200 uppercase tracking-tight cursor-pointer">
+          Đặt hàng ngay
         </button>
       </div>
     </div>
