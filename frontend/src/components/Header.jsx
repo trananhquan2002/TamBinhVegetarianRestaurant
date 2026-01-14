@@ -38,7 +38,18 @@ export default function Header() {
             </Link>
             {user ? (
               <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 p-0.5 pr-2 rounded-full shadow-inner max-w-fit">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-linear-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-[10px] font-black shrink-0 shadow-sm">{(typeof user === 'string' ? user : user.userName)?.charAt(0).toUpperCase()}</div>
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="User Avatar"
+                    className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover shrink-0 shadow-sm border border-gray-200"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
+                {!user.avatar && <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-linear-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-[10px] font-black shrink-0 shadow-sm">{(typeof user === 'string' ? user : user.userName)?.charAt(0).toUpperCase()}</div>}
                 <div className="flex items-center whitespace-nowrap overflow-visible">
                   <span className="text-[10px] md:text-xs font-black text-gray-800 tracking-tight px-1">{typeof user === 'string' ? user : user.userName}</span>
                 </div>
@@ -47,7 +58,7 @@ export default function Header() {
                     logout()
                     navigate('/')
                   }}
-                  className="p-1 text-gray-400 hover:text-red-600 ml-0.5">
+                  className="p-1 text-gray-400 hover:text-red-600 ml-0.5 cursor-pointer">
                   <FiLogOut size={13} />
                 </button>
               </div>

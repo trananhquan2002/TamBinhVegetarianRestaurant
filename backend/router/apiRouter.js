@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { OAuth2Client } = require('google-auth-library')
+const { google } = require('googleapis')
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const Product = require('../models/Product')
 const Category = require('../models/Category')
 const User = require('../models/User')
@@ -298,6 +301,39 @@ router.post('/login', async (req, res) => {
     res.status(200).json({ ...data, token })
   } catch (err) {
     res.status(500).json({ message: 'Lỗi đăng nhập' })
+  }
+})
+
+// Đăng nhập bằng google
+router.post('/loginGoogle', async (req, res) => {
+  try {
+    const token = req.headers.tokengoogle
+    if (!token) return res.status(400).json({ message: 'Thiếu Token' })
+    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
+    const userInfo = await response.json()
+    if (!userInfo || userInfo.error) {
+      return res.status(401).json({ message: 'Token Google không hợp lệ' })
+    }
+    let user = await User.findOneAndUpdate(
+      { userName: userInfo.name },
+      { avatar: userInfo.picture },
+      { new: true, upsert: true }
+    )
+    if (!user.role) {
+      user.role = 'user'
+      await user.save()
+    }
+    const sysToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    res.status(200).json({
+      _id: user._id,
+      userName: user.userName,
+      role: user.role,
+      avatar: user.avatar,
+      token: sysToken,
+    })
+  } catch (error) {
+    console.error('Lỗi xác thực Google:', error)
+    res.status(500).json({ message: 'Lỗi hệ thống' })
   }
 })
 
