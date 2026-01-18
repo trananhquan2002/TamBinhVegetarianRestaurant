@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { FaCalendarAlt, FaCheck, FaPhoneAlt, FaUsers, FaClock, FaUserAlt, FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import toast, { Toaster } from 'react-hot-toast'
 import { formatDateTimeVN } from '../../utils/formatDate'
-import { playVoiceNotification } from '../../utils/speech'
 import io from 'socket.io-client'
 import { useAuth } from './context/AuthContext'
 const socket = io('http://localhost:5000')
@@ -45,8 +44,6 @@ export default function ReservationManager() {
   useEffect(() => {
     socket.on('new_activity', (newRes) => {
       fetchData()
-      const guestName = newRes.fullName
-      playVoiceNotification(`Bạn có một yêu cầu đặt bàn mới từ ${guestName}`)
       toast.success(`Yêu cầu đặt bàn mới từ ${guestName}`)
     })
     return () => socket.off('new_activity')

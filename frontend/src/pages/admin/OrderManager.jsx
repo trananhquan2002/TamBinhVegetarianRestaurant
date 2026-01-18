@@ -3,7 +3,6 @@ import { FaEye, FaPhoneAlt, FaMapMarkerAlt, FaTimes, FaUser, FaCalendarAlt, FaSe
 import io from 'socket.io-client'
 import { useAuth } from './context/AuthContext'
 import toast, { Toaster } from 'react-hot-toast'
-import { playVoiceNotification } from '../../utils/speech'
 const socket = io('http://localhost:5000')
 export default function OrderManager() {
   const { admin } = useAuth()
@@ -41,8 +40,6 @@ export default function OrderManager() {
   useEffect(() => {
     socket.on('new_activity', (newRes) => {
       fetchOrders()
-      const guestName = newRes.customerName
-      playVoiceNotification(`Bạn có đơn đặt hàng mới từ khách hàng ${guestName}`)
       toast.success(`Đơn hàng mới từ ${guestName}`)
     })
     return () => socket.off('new_activity')

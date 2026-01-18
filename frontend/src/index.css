@@ -3,3 +3,6 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
+#booking-section {
+  scroll-margin-top: 80px;
+}

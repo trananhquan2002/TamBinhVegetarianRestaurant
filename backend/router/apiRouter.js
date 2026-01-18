@@ -225,13 +225,10 @@ router.post('/feedback', async (req, res) => {
     if (!name || !phone || !message) return res.status(400).json({ message: 'Thiếu thông tin!' })
     const newFeedback = new Feedback({ name, phone, message, createdAt: new Date() })
     await newFeedback.save()
-
     const newNoti = new Notification({ type: 'feedback', content: `Khách hàng ${name} vừa gửi góp ý`, isRead: false })
     await newNoti.save()
-
     const io = req.app.get('socketio')
     if (io) io.emit('new_activity', newNoti)
-
     return res.status(200).json({ message: 'Cảm ơn bạn đã góp ý!' })
   } catch (err) {
     return res.status(500).json({ message: 'Lỗi server!' })
@@ -314,11 +311,7 @@ router.post('/loginGoogle', async (req, res) => {
     if (!userInfo || userInfo.error) {
       return res.status(401).json({ message: 'Token Google không hợp lệ' })
     }
-    let user = await User.findOneAndUpdate(
-      { userName: userInfo.name },
-      { avatar: userInfo.picture },
-      { new: true, upsert: true }
-    )
+    let user = await User.findOneAndUpdate({ userName: userInfo.name }, { avatar: userInfo.picture }, { new: true, upsert: true })
     if (!user.role) {
       user.role = 'user'
       await user.save()
