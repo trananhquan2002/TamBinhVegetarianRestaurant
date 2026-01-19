@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FiClock, FiCalendar, FiUsers, FiPhone, FiCheckCircle, FiHome } from 'react-icons/fi'
 import { FaCheckCircle } from 'react-icons/fa'
