@@ -1,15 +1,17 @@
-const express = require('express')
-const router = express.Router()
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const Product = require('../models/Product')
-const Category = require('../models/Category')
-const User = require('../models/User')
-const Reservation = require('../models/Reservation')
-const Feedback = require('../models/Feedback')
-const Order = require('../models/Order')
-const Notification = require('../models/Notification')
-const Admin = require('../models/Admin')
+import { Router } from 'express'
+const router = Router()
+import bcrypt from 'bcrypt'
+const { hash, compare } = bcrypt
+import jwt from 'jsonwebtoken'
+const { verify, sign } = jwt
+import Product from '../models/Product.js'
+import Category from '../models/Category.js'
+import User from '../models/User.js'
+import Reservation from '../models/Reservation.js'
+import Feedback from '../models/Feedback.js'
+import Order from '../models/Order.js'
+import Notification from '../models/Notification.js'
+import Admin from '../models/Admin.js'
 const SECRET_KEY = process.env.JWT_SECRET
 
 // ==========================================
@@ -19,7 +21,7 @@ const SECRET_KEY = process.env.JWT_SECRET
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) return res.status(401).json({ message: 'Bạn chưa đăng nhập!' })
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+  verify(token, SECRET_KEY, (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Token không hợp lệ hoặc đã hết hạn!' })
     req.user = decoded
     next()
@@ -127,7 +129,7 @@ router.patch('/orders/:id/status', isAdmin, async (req, res) => {
 
 router.get('/orders/last-info/:customerId', verifyToken, async (req, res) => {
   try {
-    const lastOrder = await Order.findOne({ customerId: req.params.customerId }).sort({ createdAt: -1 })
+    const lastOrder = await __findOne({ customerId: req.params.customerId }).sort({ createdAt: -1 })
     if (!lastOrder) return res.status(404).json({ message: 'Chưa có đơn hàng cũ' })
     res.json({ customerName: lastOrder.customerName, phone: lastOrder.phone, address: lastOrder.address })
   } catch (err) {
@@ -143,7 +145,7 @@ router.post('/reservation', async (req, res) => {
   const { fullName, phone, quantity, time } = req.body
   try {
     if (!fullName || !phone || !quantity || !time) return res.status(400).json({ message: 'Thiếu thông tin!' })
-    const existing = await Reservation.findOne({ phone, status: 'pending' })
+    const existing = await _findOne({ phone, status: 'pending' })
     if (existing) return res.status(400).json({ message: 'Số điện thoại này đang có lịch chờ!' })
     const newReservation = new Reservation({ fullName, phone, quantity, time: new Date(time) })
     await newReservation.save()
@@ -175,7 +177,7 @@ router.get('/reservations', isAdmin, async (req, res) => {
       end.setHours(23, 59, 59, 999)
       query.time = { $gte: start, $lte: end }
     }
-    const data = await Reservation.find(query).sort({ createdAt: -1 })
+    const data = await __find(query).sort({ createdAt: -1 })
     res.json(data)
   } catch (err) {
     res.status(500).json({ message: err.message })
@@ -184,7 +186,7 @@ router.get('/reservations', isAdmin, async (req, res) => {
 
 router.patch('/reservations/:id/status', isAdmin, async (req, res) => {
   try {
-    const updated = await Reservation.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true })
+    const updated = await findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true })
     if (!updated) return res.status(404).json({ message: 'Không tìm thấy!' })
     const io = req.app.get('socketio')
     if (io) io.to(req.params.id).emit('reservation-status-updated', updated)
@@ -216,7 +218,7 @@ router.post('/feedback', async (req, res) => {
 
 router.get('/feedbacks', isAdmin, async (req, res) => {
   try {
-    const data = await Feedback.find().sort({ createdAt: -1 })
+    const data = await ___find().sort({ createdAt: -1 })
     res.json(data)
   } catch (err) {
     res.status(500).json({ message: err.message })
@@ -228,12 +230,12 @@ router.get('/feedbacks', isAdmin, async (req, res) => {
 // ==========================================
 
 router.get('/menu', async (req, res) => {
-  const menuItems = await Product.find()
+  const menuItems = await find()
   res.status(200).json({ data: menuItems })
 })
 
 router.get('/categories', async (req, res) => {
-  const cats = await Category.find()
+  const cats = await _find()
   res.status(200).json(cats)
 })
 
@@ -248,7 +250,7 @@ router.post('/register', async (req, res) => {
     if (userExists) {
       return res.status(400).json({ message: 'Tên đăng nhập này đã được đăng ký!' })
     }
-    const hashedPassword = await bcrypt.hash(passWord, 10)
+    const hashedPassword = await hash(passWord, 10)
     const newUser = new User({
       userName,
       passWord: hashedPassword,
@@ -265,10 +267,10 @@ router.post('/login', async (req, res) => {
   const { userName, passWord } = req.body
   try {
     const user = await User.findOne({ userName })
-    if (!user || !(await bcrypt.compare(passWord, user.passWord))) {
+    if (!user || !(await compare(passWord, user.passWord))) {
       return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu!' })
     }
-    const token = jwt.sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '7d' })
+    const token = sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '7d' })
     const { passWord: _, ...data } = user._doc
     res.status(200).json({ ...data, token })
   } catch (err) {
@@ -285,12 +287,12 @@ router.post('/loginGoogle', async (req, res) => {
     if (!userInfo || userInfo.error) {
       return res.status(401).json({ message: 'Token Google không hợp lệ' })
     }
-    let user = await User.findOneAndUpdate({ userName: userInfo.name }, { avatar: userInfo.picture }, { new: true, upsert: true })
+    let user = await findOneAndUpdate({ userName: userInfo.name }, { avatar: userInfo.picture }, { new: true, upsert: true })
     if (!user.role) {
       user.role = 'user'
       await user.save()
     }
-    const sysToken = jwt.sign({ id: user._id, role: user.role }, SECRET_KEY, { expiresIn: '7d' })
+    const sysToken = sign({ id: user._id, role: user.role }, SECRET_KEY, { expiresIn: '7d' })
     res.status(200).json({
       _id: user._id,
       userName: user.userName,
@@ -309,7 +311,7 @@ router.post('/register-admin', async (req, res) => {
   try {
     const exists = await Admin.findOne({ userName })
     if (exists) return res.status(400).json({ message: 'Admin đã tồn tại!' })
-    const hashedPassword = await bcrypt.hash(passWord, 10)
+    const hashedPassword = await hash(passWord, 10)
     const newAdmin = new Admin({ userName, passWord: hashedPassword })
     await newAdmin.save()
     res.status(200).json({ message: 'Tạo admin thành công!' })
@@ -321,11 +323,11 @@ router.post('/register-admin', async (req, res) => {
 router.post('/login-admin', async (req, res) => {
   const { userName, passWord } = req.body
   try {
-    const admin = await Admin.findOne({ userName })
-    if (!admin || !(await bcrypt.compare(passWord, admin.passWord))) {
+    const admin = await ___findOne({ userName })
+    if (!admin || !(await compare(passWord, admin.passWord))) {
       return res.status(401).json({ message: 'Sai thông tin quản trị!' })
     }
-    const token = jwt.sign({ id: admin._id, role: admin.role }, SECRET_KEY, { expiresIn: '1d' })
+    const token = sign({ id: admin._id, role: admin.role }, SECRET_KEY, { expiresIn: '1d' })
     const { passWord: _, ...adminData } = admin._doc
     res.status(200).json({ ...adminData, token })
   } catch (err) {
@@ -349,8 +351,8 @@ router.get('/stats', isAdmin, async (req, res) => {
 })
 
 router.get('/notifications', isAdmin, async (req, res) => {
-  const data = await Notification.find().sort({ createdAt: -1 }).limit(15)
+  const data = await _____find().sort({ createdAt: -1 }).limit(15)
   res.status(200).json(data)
 })
 
-module.exports = router
+export default router

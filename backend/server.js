@@ -3,7 +3,7 @@ import { createServer } from 'http'
 import cors from 'cors'
 import { connect } from 'mongoose'
 require('dotenv').config()
-import apiRouter from './router/apiRouter'
+import apiRouter from './router/apiRouter.js'
 const app = express()
 const server = createServer(app)
 const port = process.env.PORT
