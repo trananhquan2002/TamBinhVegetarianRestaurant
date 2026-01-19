@@ -3,6 +3,8 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { FiMapPin, FiTruck, FiCreditCard } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+
 const HA_NOI_AREAS = [
   { name: 'Quận Cầu Giấy', lat: 21.0362, lng: 105.7908 },
   { name: 'Quận Thanh Xuân', lat: 20.9937, lng: 105.8119 },
@@ -37,28 +39,37 @@ const HA_NOI_AREAS = [
 ]
 const RESTAURANT_COORDS = { lat: 21.0123, lng: 105.8123 }
 const API_BASE_URL = import.meta.env.VITE_API_URL
+
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [customerName, setCustomerName] = useState(user?.userName || '')
+  const [customerName, setCustomerName] = useState('')
   const [phone, setPhone] = useState('')
   const [selectedArea, setSelectedArea] = useState(null)
   const [addressDetail, setAddressDetail] = useState('')
   const [distance, setDistance] = useState(0)
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371
-    const dLat = (lat2 - lat1) * (Math.PI / 180)
-    const dLon = (lon2 - lon1) * (Math.PI / 180)
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return R * c
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  useEffect(() => {
+    const savedInfo = localStorage.getItem('last_checkout_info')
+    if (savedInfo) {
+      const parsedInfo = JSON.parse(savedInfo)
+      setCustomerName(parsedInfo.customerName || '')
+      setPhone(parsedInfo.phone || '')
+      setAddressDetail(parsedInfo.addressDetail || '')
+      if (parsedInfo.selectedAreaName) {
+        const area = HA_NOI_AREAS.find((a) => a.name === parsedInfo.selectedAreaName)
+        if (area) setSelectedArea(area)
+      }
+    } else if (user) {
+      setCustomerName(user.userName || '')
+    }
+  }, [user])
   useEffect(() => {
     const fetchLastInfo = async () => {
       const userId = user?._id || user?.id
       const token = user?.token
-      if (userId && token) {
+      if (userId && token && !localStorage.getItem('last_checkout_info')) {
         try {
           const res = await fetch(`${API_BASE_URL}/api/orders/last-info/${userId}`, {
             method: 'GET',
@@ -73,7 +84,7 @@ export default function CheckoutPage() {
               if (data.customerName) setCustomerName(data.customerName)
               if (data.phone) setPhone(data.phone)
               if (data.address) {
-                const matchedArea = HA_NOI_AREAS.find((a) => (a.lat === data.address.lat && a.lng === data.address.lng) || a.name === data.address.area)
+                const matchedArea = HA_NOI_AREAS.find((a) => a.name === data.address.area)
                 if (matchedArea) setSelectedArea(matchedArea)
                 const detail = data.address.detail ? data.address.detail.split(',')[0] : ''
                 setAddressDetail(detail)
@@ -81,12 +92,20 @@ export default function CheckoutPage() {
             }
           }
         } catch (error) {
-          console.log('Chưa có thông tin cũ để lấy')
+          console.log('Chưa có thông tin cũ trên server')
         }
       }
     }
     fetchLastInfo()
   }, [user])
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371
+    const dLat = (lat2 - lat1) * (Math.PI / 180)
+    const dLon = (lon2 - lon1) * (Math.PI / 180)
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+  }
   useEffect(() => {
     if (selectedArea) {
       const d = calculateDistance(RESTAURANT_COORDS.lat, RESTAURANT_COORDS.lng, selectedArea.lat, selectedArea.lng)
@@ -96,13 +115,26 @@ export default function CheckoutPage() {
   const shippingFee = distance > 10 ? 15000 + (Math.ceil(distance) - 10) * 5000 : 0
   const totalAmount = cartTotal + shippingFee
   const handlePlaceOrder = async () => {
-    if (!phone || !selectedArea || !addressDetail) return alert('Vui lòng nhập đủ thông tin!')
+    if (!customerName || !phone || !selectedArea || !addressDetail) {
+      return toast.error('Vui lòng điền đầy đủ thông tin giao hàng!')
+    }
+    if (cart.length === 0) return toast.error('Giỏ hàng của bạn đang trống!')
+    setIsSubmitting(true)
+    const loadingToast = toast.loading('Đang xử lý đơn hàng...')
+    const infoToSave = {
+      customerName,
+      phone,
+      addressDetail,
+      selectedAreaName: selectedArea.name,
+    }
+    localStorage.setItem('last_checkout_info', JSON.stringify(infoToSave))
     const orderData = {
-      customerId: user?._id || user?.id,
+      customerId: user?._id || user?.id || null,
       customerName,
       phone,
       address: {
         detail: `${addressDetail}, ${selectedArea.name}, Hà Nội`,
+        area: selectedArea.name,
         lat: selectedArea.lat,
         lng: selectedArea.lng,
       },
@@ -111,12 +143,14 @@ export default function CheckoutPage() {
         title: item.title,
         price: item.price,
         quantity: item.quantity,
+        image: item.image,
       })),
       subTotal: cartTotal,
       distance,
       shippingFee,
       totalAmount,
       paymentMethod: 'COD',
+      status: 'pending',
     }
     try {
       const res = await fetch(`${API_BASE_URL}/api/orders`, {
@@ -125,14 +159,19 @@ export default function CheckoutPage() {
         body: JSON.stringify(orderData),
       })
       const result = await res.json()
+      toast.dismiss(loadingToast)
       if (res.ok) {
+        toast.success('Đặt hàng thành công!')
         clearCart()
         navigate('/order-success', { state: { order: result.order } })
       } else {
-        console.error('Lỗi: ' + result.message)
+        toast.error(result.message || 'Có lỗi xảy ra khi đặt hàng')
       }
     } catch (err) {
-      console.error('Lỗi kết nối hệ thống!')
+      toast.dismiss(loadingToast)
+      toast.error('Lỗi kết nối hệ thống. Vui lòng thử lại sau!')
+    } finally {
+      setIsSubmitting(false)
     }
   }
   return (
@@ -143,12 +182,8 @@ export default function CheckoutPage() {
         </h4>
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
-            <div className="relative">
-              <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Tên người nhận" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-            </div>
-            <div className="relative">
-              <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số điện thoại" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
+            <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Tên người nhận" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+            <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số điện thoại" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           <div className="relative">
             <select
@@ -205,11 +240,11 @@ export default function CheckoutPage() {
       </div>
       <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-100 p-4 pb-8 flex items-center justify-between z-50">
         <div className="pl-2">
-          <p className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Tổng cộng</p>
+          <p className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Tổng cộng thanh toán</p>
           <p className="text-[#FE2C55] font-black text-2xl tracking-tighter">{totalAmount.toLocaleString()}đ</p>
         </div>
-        <button onClick={handlePlaceOrder} className="bg-[#FE2C55] text-white px-10 py-4 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-lg shadow-red-200 uppercase tracking-tight cursor-pointer">
-          Đặt hàng ngay
+        <button onClick={handlePlaceOrder} disabled={isSubmitting} className={`${isSubmitting ? 'bg-gray-400' : 'bg-[#FE2C55]'} text-white px-10 py-4 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-lg shadow-red-200 uppercase tracking-tight cursor-pointer`}>
+          {isSubmitting ? 'Đang xử lý...' : 'Đặt hàng ngay'}
         </button>
       </div>
     </div>

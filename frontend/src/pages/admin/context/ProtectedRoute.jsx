@@ -19,10 +19,10 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
             <div className="flex items-center">
               <span className="text-2xl mr-3">🎁</span>
               <p className="text-blue-700 font-medium">
-                Bạn có muốn <span className="font-bold">đăng nhập</span> để nhận ưu đãi cho thành viên và theo dõi đơn hàng dễ dàng hơn không?
+                Bạn có muốn <span className="font-bold">đăng nhập</span> để nhận ưu đãi và tự động điền thông tin cho lần sau không?
               </p>
             </div>
-            <Link to="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition-all shadow-md active:scale-95">
+            <Link to="/login" state={{ from: location }} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition-all shadow-md">
               Đăng nhập ngay
             </Link>
           </div>

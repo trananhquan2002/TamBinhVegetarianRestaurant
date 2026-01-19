@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -9,12 +9,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const [userName, setUserName] = useState('')
   const [passWord, setPassWord] = useState('')
   const [error, setError] = useState('')
-
-  // Cấu hình Google Login
+  const from = location.state?.from?.pathname || '/'
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse) => {
       const loadingToast = toast.loading('Đang xác thực với Google...')
@@ -27,13 +27,11 @@ export default function Login() {
           },
         })
         const data = await response.json()
-
         toast.dismiss(loadingToast)
-
         if (response.ok) {
           login(data)
           toast.success('Chào mừng ' + data.userName + ' đã quay trở lại!')
-          navigate('/')
+          navigate(from, { replace: true })
         } else {
           toast.error(data.message || 'Tài khoản không được phép truy cập')
         }
@@ -61,7 +59,7 @@ export default function Login() {
       const data = await res.json()
       if (res.ok) {
         login(data)
-        navigate('/')
+        navigate(from, { replace: true })
       } else {
         setError(data.message || 'Tên người dùng hoặc mật khẩu không đúng.')
       }
@@ -71,7 +69,7 @@ export default function Login() {
   }
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-400 via-purple-500 to-indigo-700 px-4">
-      <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm space-y-5">
+      <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-2xl p-8 w-full max-sm space-y-5">
         <h1 className="text-3xl font-black text-center text-gray-800 tracking-tight italic">TÂM BÌNH</h1>
         <div className="space-y-3">
           <input
