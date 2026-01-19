@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function ReservationSection() {
   const [guestCount, setGuestCount] = useState('')
   const navigate = useNavigate()
@@ -8,7 +9,7 @@ export default function ReservationSection() {
   const handleReservation = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch('/api/reservation', {
+      const res = await fetch(`${API_BASE_URL}/api/reservation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

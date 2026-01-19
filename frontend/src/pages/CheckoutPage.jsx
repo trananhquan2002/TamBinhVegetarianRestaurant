@@ -36,6 +36,7 @@ const HA_NOI_AREAS = [
   { name: 'Huyện Ứng Hòa', lat: 20.7167, lng: 105.7667 },
 ]
 const RESTAURANT_COORDS = { lat: 21.0123, lng: 105.8123 }
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const { user } = useAuth()
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
       const token = user?.token
       if (userId && token) {
         try {
-          const res = await fetch(`/api/orders/last-info/${userId}`, {
+          const res = await fetch(`${API_BASE_URL}/api/orders/last-info/${userId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -118,7 +119,7 @@ export default function CheckoutPage() {
       paymentMethod: 'COD',
     }
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
@@ -136,14 +137,11 @@ export default function CheckoutPage() {
   }
   return (
     <div className="bg-[#F5F5F5] min-h-screen pb-40">
-      {/* Header Section - Địa chỉ */}
       <div className="bg-white p-5 rounded-b-3xl shadow-sm border-b-4 border-dashed border-red-50">
         <h4 className="font-black text-xs text-[#FE2C55] mb-5 flex items-center gap-2 uppercase tracking-widest">
           <FiMapPin className="text-base" /> Địa chỉ nhận hàng (Hà Nội)
         </h4>
-
         <div className="space-y-4">
-          {/* Tên & SĐT trên 2 dòng để dễ bấm trên Mobile */}
           <div className="grid grid-cols-1 gap-4">
             <div className="relative">
               <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Tên người nhận" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
@@ -152,7 +150,6 @@ export default function CheckoutPage() {
               <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số điện thoại" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
           </div>
-
           <div className="relative">
             <select
               className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none appearance-none cursor-pointer focus:border-[#FE2C55] shadow-sm"
@@ -170,17 +167,13 @@ export default function CheckoutPage() {
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">▼</div>
           </div>
-
           <input className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[#FE2C55] focus:bg-white transition-all shadow-sm" placeholder="Số nhà, tên đường, tòa nhà..." value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)} />
         </div>
       </div>
-
-      {/* Sản phẩm Section */}
       <div className="mt-3 bg-white p-5 rounded-3xl shadow-sm mx-2">
         <div className="flex items-center gap-2 mb-5 border-l-4 border-[#FE2C55] pl-3">
           <span className="text-sm font-black uppercase italic tracking-tighter">Tâm Bình Restaurant</span>
         </div>
-
         <div className="space-y-5">
           {cart.map((item) => (
             <div key={item.id} className="flex gap-4 items-start">
@@ -196,8 +189,6 @@ export default function CheckoutPage() {
           ))}
         </div>
       </div>
-
-      {/* Info Section */}
       <div className="mt-3 bg-white p-5 rounded-3xl shadow-sm mx-2 space-y-4">
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-500 font-medium flex items-center gap-2">
@@ -205,7 +196,6 @@ export default function CheckoutPage() {
           </span>
           <span className={shippingFee === 0 ? 'text-green-600 font-black' : 'font-black text-gray-800'}>{shippingFee === 0 ? 'MIỄN PHÍ' : `${shippingFee.toLocaleString()}đ`}</span>
         </div>
-
         <div className="flex justify-between items-center text-sm border-t border-gray-50 pt-4">
           <span className="text-gray-500 font-medium flex items-center gap-2">
             <FiCreditCard className="text-lg text-orange-500" /> Phương thức thanh toán
@@ -213,8 +203,6 @@ export default function CheckoutPage() {
           <span className="font-black text-gray-800">Tiền mặt (COD)</span>
         </div>
       </div>
-
-      {/* Bottom Bar - Sticky */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-100 p-4 pb-8 flex items-center justify-between z-50">
         <div className="pl-2">
           <p className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Tổng cộng</p>

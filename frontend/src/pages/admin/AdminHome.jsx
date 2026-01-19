@@ -3,7 +3,8 @@ import { FaUsers, FaClipboardList, FaUtensils, FaMoneyBillWave } from 'react-ico
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import io from 'socket.io-client'
-const socket = io('http://localhost:5000')
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const socket = io(API_BASE_URL)
 export default function AdminHome() {
   const { admin, logout } = useAuth()
   const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function AdminHome() {
   const fetchStats = useCallback(async () => {
     if (!admin?.token) return
     try {
-      const res = await fetch('/api/stats', {
+      const res = await fetch(`${API_BASE_URL}/api/stats`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${admin.token}`,
@@ -40,7 +41,7 @@ export default function AdminHome() {
   const fetchNotifications = useCallback(async () => {
     if (!admin?.token) return
     try {
-      const res = await fetch('/api/notifications', {
+      const res = await fetch(`${API_BASE_URL}/api/notifications`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${admin.token}`,

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { Link } from 'react-router-dom'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
@@ -11,7 +12,7 @@ export default function Login() {
   async function handleLogin(e) {
     e.preventDefault()
     try {
-      const res = await fetch('/api/login-admin', {
+      const res = await fetch(`${API_BASE_URL}/api/login-admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userName, passWord }),

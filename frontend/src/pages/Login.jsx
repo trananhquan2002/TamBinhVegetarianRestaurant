@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { toast } from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export default function Login() {
   const navigate = useNavigate()
@@ -18,11 +19,10 @@ export default function Login() {
     onSuccess: async (codeResponse) => {
       const loadingToast = toast.loading('Đang xác thực với Google...')
       try {
-        const response = await fetch('/api/loginGoogle', {
+        const response = await fetch(`${API_BASE_URL}/api/loginGoogle`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Truyền access_token qua header để Backend xử lý
             tokengoogle: codeResponse.access_token,
           },
         })
@@ -31,7 +31,7 @@ export default function Login() {
         toast.dismiss(loadingToast)
 
         if (response.ok) {
-          login(data) // Lưu vào Context (bao gồm userName, role, token)
+          login(data)
           toast.success('Chào mừng ' + data.userName + ' đã quay trở lại!')
           navigate('/')
         } else {
@@ -52,9 +52,8 @@ export default function Login() {
   async function handleLogin(e) {
     e.preventDefault()
     if (!userName || !passWord) return setError('Vui lòng nhập đầy đủ thông tin')
-
     try {
-      const res = await fetch('/api/login', {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userName, passWord }),
@@ -70,12 +69,10 @@ export default function Login() {
       setError('Không thể kết nối máy chủ.')
     }
   }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-400 via-purple-500 to-indigo-700 px-4">
       <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm space-y-5">
         <h1 className="text-3xl font-black text-center text-gray-800 tracking-tight italic">TÂM BÌNH</h1>
-
         <div className="space-y-3">
           <input
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
@@ -97,11 +94,8 @@ export default function Login() {
             }}
           />
         </div>
-
         {error && <p className="text-red-500 text-xs text-center font-bold bg-red-50 py-2 rounded-lg">{error}</p>}
-
         <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-indigo-100 transition-all active:scale-95 cursor-pointer">Đăng nhập hệ thống</button>
-
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-gray-100"></span>
@@ -110,12 +104,10 @@ export default function Login() {
             <span className="bg-white px-2 text-gray-400 font-medium">Hoặc</span>
           </div>
         </div>
-
         <button type="button" onClick={() => googleLogin()} className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-3 rounded-xl font-bold shadow-sm transition-all active:scale-95 cursor-pointer">
           <FcGoogle className="text-2xl" />
           <span>Tiếp tục với Google</span>
         </button>
-
         <div className="pt-4 text-center border-t border-gray-50">
           <Link to="/register">
             <button type="button" className="text-indigo-600 hover:text-indigo-800 font-black text-sm transition-all cursor-pointer">

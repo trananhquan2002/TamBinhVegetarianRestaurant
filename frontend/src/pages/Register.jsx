@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function Register() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({ userName: '', passWord: '', confirmPass: '' })
@@ -8,7 +9,7 @@ export default function Register() {
     e.preventDefault()
     if (formData.passWord !== formData.confirmPass) return setError('Mật khẩu không khớp.')
     try {
-      const res = await fetch('/api/register', {
+      const res = await fetch(`${API_BASE_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

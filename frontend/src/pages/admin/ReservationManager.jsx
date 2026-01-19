@@ -4,7 +4,8 @@ import toast, { Toaster } from 'react-hot-toast'
 import { formatDateTimeVN } from '../../utils/formatDate'
 import io from 'socket.io-client'
 import { useAuth } from './context/AuthContext'
-const socket = io('http://localhost:5000')
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const socket = io(API_BASE_URL)
 export default function ReservationManager() {
   const { admin } = useAuth()
   const [reservations, setReservations] = useState([])
@@ -17,7 +18,7 @@ export default function ReservationManager() {
     if (!admin?.token) return
     setLoading(true)
     try {
-      const res = await fetch(`/api/reservations?date=${filterDate}`, {
+      const res = await fetch(`${API_BASE_URL}/api/reservations?date=${filterDate}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +51,7 @@ export default function ReservationManager() {
   }, [fetchData])
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`/api/reservations/${id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/reservations/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin.token}` },
         body: JSON.stringify({ status: 'confirmed' }),

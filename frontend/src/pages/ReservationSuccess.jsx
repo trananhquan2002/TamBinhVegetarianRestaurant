@@ -4,7 +4,8 @@ import { FiClock, FiCalendar, FiUsers, FiPhone, FiCheckCircle, FiHome } from 're
 import { FaCheckCircle } from 'react-icons/fa'
 import { io } from 'socket.io-client'
 import { formatDateTimeVN } from '../utils/formatDate'
-const socket = io('http://localhost:5000')
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const socket = io(API_BASE_URL)
 export default function ReservationSuccess() {
   const location = useLocation()
   const navigate = useNavigate()

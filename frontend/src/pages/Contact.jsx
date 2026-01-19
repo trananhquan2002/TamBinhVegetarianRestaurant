@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function Contact() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' })
@@ -7,7 +8,7 @@ export default function Contact() {
   const handleFeedback = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch('/api/feedback', {
+      const res = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

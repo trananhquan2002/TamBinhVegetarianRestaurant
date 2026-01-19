@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FaCheckCircle, FaHome, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa'
 import { FiClock, FiCheckCircle } from 'react-icons/fi'
 import io from 'socket.io-client'
-const socket = io('http://localhost:5000')
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const socket = io(API_BASE_URL)
 export default function OrderSuccess() {
   const location = useLocation()
   const navigate = useNavigate()

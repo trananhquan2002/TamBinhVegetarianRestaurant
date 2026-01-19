@@ -3,7 +3,8 @@ import { FaEye, FaPhoneAlt, FaMapMarkerAlt, FaTimes, FaUser, FaCalendarAlt, FaSe
 import io from 'socket.io-client'
 import { useAuth } from './context/AuthContext'
 import toast, { Toaster } from 'react-hot-toast'
-const socket = io('http://localhost:5000')
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const socket = io(API_BASE_URL)
 export default function OrderManager() {
   const { admin } = useAuth()
   const [orders, setOrders] = useState([])
@@ -16,7 +17,7 @@ export default function OrderManager() {
   const fetchOrders = useCallback(async () => {
     if (!admin?.token) return
     try {
-      const res = await fetch(`/api/orders?date=${filterDate}`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders?date=${filterDate}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ export default function OrderManager() {
   const handleUpdateStatus = async (orderId, newStatus) => {
     if (!admin?.token) return
     try {
-      const res = await fetch(`/api/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin.token}` },
         body: JSON.stringify({ status: newStatus }),

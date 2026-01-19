@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ProductCard from './ProductCard'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function ProductSection() {
   const [productData, setProductData] = useState([])
   const [categoriesData, setCategoriesData] = useState([])
@@ -12,7 +13,7 @@ export default function ProductSection() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, catRes] = await Promise.all([fetch('/api/menu'), fetch('/api/categories')])
+        const [prodRes, catRes] = await Promise.all([fetch(`${API_BASE_URL}/api/menu`), fetch(`${API_BASE_URL}/api/categories`)])
         if (!prodRes.ok) throw new Error('Lỗi tải menu')
         const prodJson = await prodRes.json()
         const catJson = await catRes.json()
@@ -73,7 +74,6 @@ export default function ProductSection() {
   return (
     <section id="product-section" className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Thực đơn Tâm Bình</h2>
-
       <div className="flex justify-center mb-10 px-2">
         <ul className="flex bg-gray-200 p-1.5 rounded-full w-full max-w-md md:max-w-max overflow-hidden">
           {categoriesData.map((cat) => (
