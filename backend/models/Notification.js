@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const notificationSchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const notificationSchema = new Schema(
   {
     type: { type: String, enum: ['order', 'reservation', 'feedback'], required: true },
     content: { type: String, required: true },
@@ -7,4 +7,4 @@ const notificationSchema = new mongoose.Schema(
   },
   { versionKey: false, timestamps: true }
 )
-module.exports = mongoose.model('notifications', notificationSchema)
+export default model('notifications', notificationSchema)

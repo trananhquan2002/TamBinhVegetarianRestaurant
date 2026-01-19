@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const feedbackSchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const feedbackSchema = new Schema(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
@@ -8,4 +8,4 @@ const feedbackSchema = new mongoose.Schema(
   },
   { timestamps: true, versionKey: false }
 )
-module.exports = mongoose.model('feedbacks', feedbackSchema)
+export default model('feedbacks', feedbackSchema)

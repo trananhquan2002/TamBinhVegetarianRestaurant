@@ -1,8 +1,8 @@
-const mongoose = require('mongoose')
-const orderSchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const orderSchema = new Schema(
   {
     orderCode: { type: String, unique: true },
-    customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', default: null },
+    customerId: { type: Schema.Types.ObjectId, ref: 'users', default: null },
     customerName: { type: String, required: true },
     phone: { type: String, required: true },
     address: {
@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema(
     },
     cartItems: [
       {
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'products' },
+        productId: { type: Schema.Types.ObjectId, ref: 'products' },
         title: String,
         quantity: Number,
         price: Number,
@@ -29,4 +29,4 @@ const orderSchema = new mongoose.Schema(
   },
   { versionKey: false, timestamps: true }
 )
-module.exports = mongoose.model('orders', orderSchema)
+export default model('orders', orderSchema)

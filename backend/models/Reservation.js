@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const reservationSchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const reservationSchema = new Schema(
   {
     fullName: { type: String, required: true },
     phone: { type: String, required: true },
@@ -10,4 +10,4 @@ const reservationSchema = new mongoose.Schema(
   },
   { versionKey: false }
 )
-module.exports = mongoose.model('reservations', reservationSchema)
+export default model('reservations', reservationSchema)

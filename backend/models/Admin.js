@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const adminSchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const adminSchema = new Schema(
   {
     userName: { type: String, required: true, unique: true },
     passWord: { type: String, required: true },
@@ -8,4 +8,4 @@ const adminSchema = new mongoose.Schema(
   },
   { versionKey: false }
 )
-module.exports = mongoose.model('admins', adminSchema)
+export default model('admins', adminSchema)

@@ -1,8 +1,8 @@
-const mongoose = require('mongoose')
-const categorySchema = new mongoose.Schema(
+import { Schema, model } from 'mongoose'
+const categorySchema = new Schema(
   {
     name: { type: String, required: true },
   },
   { versionKey: false }
 )
-module.exports = mongoose.model('categories', categorySchema)
+export default model('categories', categorySchema)
