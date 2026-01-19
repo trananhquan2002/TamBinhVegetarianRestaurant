@@ -10,14 +10,14 @@ export default function ReservationSuccess() {
   const location = useLocation()
   const navigate = useNavigate()
   const [reservation, setReservation] = useState(location.state?.reservation)
+  const { time, date } = useMemo(() => formatDateTimeVN(reservation?.time), [reservation?.time]);
   const isConfirmed = reservation?.status === 'confirmed'
-  const { time, date } = formatDateTimeVN(reservation?.time)
   useEffect(() => {
     if (reservation?._id) {
       socket.emit('join-reservation-room', reservation._id)
       socket.on('reservation-status-updated', (updatedData) => {
+        setReservation(updatedData)
         if (updatedData.status === 'confirmed' && reservation.status !== 'confirmed') {
-          setReservation(updatedData)
           const audio = new Audio('/assets/sound/success-chime.mp3')
           audio.loop = false
           audio
