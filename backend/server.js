@@ -1,16 +1,19 @@
-import express, { json, urlencoded } from 'express'
+import express from 'express'
 import { createServer } from 'http'
 import cors from 'cors'
-import { connect } from 'mongoose'
-require('dotenv').config()
+import mongoose from 'mongoose'
+import * as dotenv from 'dotenv'
+import { Server } from 'socket.io'
 import apiRouter from './router/apiRouter.js'
+dotenv.config()
 const app = express()
 const server = createServer(app)
-const port = process.env.PORT
-const io = require('socket.io')(server, {
+const port = process.env.PORT || 5000
+const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', /\.vercel\.app$/],
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 })
 app.set('socketio', io)
@@ -35,19 +38,20 @@ io.on('connection', (socket) => {
     console.log('❌ Disconnected:', socket.id)
   })
 })
-connect(process.env.MONGODB_URI)
+mongoose
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB error:', err))
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', /\.vercel\.app$/],
     credentials: true,
   })
 )
-app.use(json())
-app.use(urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use('/api', apiRouter)
 server.listen(port, () => {
   console.log(`🚀 Server đang chạy tại port ${port}`)
 })
-export default { app, io }
+export { app, io }
