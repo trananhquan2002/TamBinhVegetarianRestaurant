@@ -1,11 +1,11 @@
-const express = require('express')
-const http = require('http')
-const cors = require('cors')
-const mongoose = require('mongoose')
+import express, { json, urlencoded } from 'express'
+import { createServer } from 'http'
+import cors from 'cors'
+import { connect } from 'mongoose'
 require('dotenv').config()
-const apiRouter = require('./router/apiRouter')
+import apiRouter from './router/apiRouter'
 const app = express()
-const server = http.createServer(app)
+const server = createServer(app)
 const port = process.env.PORT
 const io = require('socket.io')(server, {
   cors: {
@@ -35,8 +35,7 @@ io.on('connection', (socket) => {
     console.log('❌ Disconnected:', socket.id)
   })
 })
-mongoose
-  .connect(process.env.MONGODB_URI)
+connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB error:', err))
 app.use(
@@ -45,10 +44,10 @@ app.use(
     credentials: true,
   })
 )
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(json())
+app.use(urlencoded({ extended: true }))
 app.use('/api', apiRouter)
 server.listen(port, () => {
   console.log(`🚀 Server đang chạy tại port ${port}`)
 })
-module.exports = { app, io }
+export default { app, io }
