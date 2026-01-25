@@ -47,16 +47,13 @@ export default function RegisterAdmin() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Tên đăng nhập</label>
-            <input className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Username" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
+            <input type="text" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Admin Username" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Mật khẩu</label>
-            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="••••••••" required onChange={(e) => setFormData({ ...formData, passWord: e.target.value })} />
+            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Mật khẩu" required onChange={(e) => setFormData({ ...formData, passWord: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Xác nhận</label>
-            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="••••••••" required onChange={(e) => setFormData({ ...formData, confirmPass: e.target.value })} />
+            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Xác nhận mật khẩu" required onChange={(e) => setFormData({ ...formData, confirmPass: e.target.value })} />
           </div>
         </div>
         {error && <p className="text-red-500 text-sm text-center font-bold bg-red-50 py-2 rounded-xl border border-red-100">{error}</p>}
