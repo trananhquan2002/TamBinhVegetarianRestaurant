@@ -1,4 +1,3 @@
-import logo from '../../public/assets/images/aboutTamBinh.png'
 export default function AboutSection() {
   return (
     <section className="bg-[#222831] text-white py-20 px-6 overflow-hidden">
@@ -6,8 +5,8 @@ export default function AboutSection() {
         <div className="w-full lg:w-1/2 relative group">
           <div className="relative z-10 transform transition-transform duration-500 group-hover:scale-105">
             <img 
-              src={logo}
-              alt="Về Tâm Bình" 
+              src="/assets/images/aboutTamBinh.png"
+              alt="Về Tâm Bình"
               className="w-full h-auto object-cover rounded-3xl"
             />
           </div>

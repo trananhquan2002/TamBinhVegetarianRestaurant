@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from '../../public/assets/images/aboutTamBinh.png'
 const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function ReservationSection() {
   const [guestCount, setGuestCount] = useState('')
@@ -76,7 +75,7 @@ export default function ReservationSection() {
             <p className="text-red-500 text-sm italic mt-4">* Vui lòng đặt trước ít nhất 30 phút để chúng tôi phục vụ tốt nhất.</p>
           </div>
           <div className="w-full h-full min-h-100 lg:h-112.5 rounded-3xl overflow-hidden shadow-2xl">
-            <img src={logo} className="w-full h-full object-cover object-center" />
+            <img src="/assets/images/aboutTamBinh.png" className="w-full h-full object-cover object-center" />
           </div>
         </div>
       </div>

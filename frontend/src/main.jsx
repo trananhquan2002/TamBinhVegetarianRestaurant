@@ -5,8 +5,9 @@ import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './pages/admin/context/AuthContext'
 import ScrollToTop from './components/ScrollToTop'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 import App from './App.jsx'
+import { HelmetProvider } from 'react-helmet-async'
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 createRoot(document.getElementById('root')).render(
   <BrowserRouter
     future={{
@@ -17,7 +18,9 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <CartProvider>
         <GoogleOAuthProvider clientId={clientId}>
-          <App />
+          <HelmetProvider>
+            <App />
+          </HelmetProvider>
         </GoogleOAuthProvider>
       </CartProvider>
     </AuthProvider>

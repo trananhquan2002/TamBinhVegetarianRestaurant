@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 const API_BASE_URL = import.meta.env.VITE_API_URL
 export default function Contact() {
   const navigate = useNavigate()
@@ -11,18 +12,14 @@ export default function Contact() {
       const res = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
-          message: formData.message,
-        }),
+        body: JSON.stringify(formData),
       })
-      const data = await res.json()
       if (res.ok) {
         alert('Gửi feedback thành công!. Cảm ơn bạn')
         setFormData({ name: '', phone: '', message: '' })
         navigate('/')
       } else {
+        const data = await res.json()
         setError(data.message)
       }
     } catch (error) {
@@ -31,6 +28,11 @@ export default function Contact() {
   }
   return (
     <main className="bg-gray-50 min-h-screen py-12">
+      <Helmet>
+        <title>Liên Hệ Nhà Hàng Chay Tâm Bình - Đặt Bàn Ngay</title>
+        <meta name="description" content="Hỗ trợ đặt bàn nhanh chóng. Hotline: 0984832086. Địa chỉ: B33 Ng. 70 P. Nguyễn Thị Định, Trung Hoà, Cầu Giấy, Hà Nội." />
+        <link rel="canonical" href="https://tam-binh-vegetarian-restaurant.vercel.app/contact" />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Liên Hệ Với Tâm Bình</h1>
@@ -71,7 +73,7 @@ export default function Contact() {
               </div>
             </div>
             <div className="rounded-2xl overflow-hidden shadow-md border-4 border-white h-80">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.635135011536!2d105.8049655!3d21.007258000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ad3df07e83df%3A0x1886ff9c734bd977!2sBuffet%20chay%20T%C3%A2m%20B%C3%ACnh!5e0!3m2!1sen!2s!4v1766161900720!5m2!1sen!2s" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Tâm Bình Map"></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.588147775928!2d105.80165747515124!3d21.00913998845421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac9633857e23%3A0xc3910c22622839b9!2zTmjDoCBow6BuZyBjaGF5IFTDom0gQsOsbmggLSBCdWZmZXQgY2hheSA1MGsgQ-G6p3UgR2nhuqV5!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" title="Tâm Bình Map"></iframe>
             </div>
           </section>
           <section className="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-gray-50">
