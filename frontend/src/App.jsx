@@ -1,5 +1,6 @@
 import { AuthProvider } from './context/AuthContext'
 import { Routes, Route, Outlet } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import ProtectedRoute from './pages/admin/context/ProtectedRoute'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -24,6 +25,15 @@ import RegisterAdmin from './pages/admin/RegisterAdmin'
 function CustomerLayout() {
   return (
     <>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            marginTop: '20px',
+          },
+        }}
+      />
       <Header />
       <main className="min-h-screen">
         <Outlet />

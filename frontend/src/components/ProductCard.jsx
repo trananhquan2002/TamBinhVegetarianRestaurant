@@ -31,7 +31,22 @@ export default function ProductCard(props) {
           <button
             onClick={() => {
               addToCart(productData)
-              toast.success(`Đã thêm ${props.title}`)
+              toast.dismiss()
+              toast.success(`Đã thêm ${props.title} vào giỏ hàng thành công`, {
+                duration: 3000,
+                style: {
+                  border: 'none',
+                  padding: '16px',
+                  color: '#16a34a',
+                  fontWeight: '500',
+                  borderRadius: '12px',
+                  background: '#fff',
+                },
+                iconTheme: {
+                  primary: '#16a34a',
+                  secondary: '#fff',
+                },
+              })
             }}
             className="bg-yellow-400 hover:bg-gray-900 hover:text-white text-black w-10 h-10 rounded-xl flex items-center justify-center shadow-md transition-all duration-300 cursor-pointer active:scale-90"
             title="Thêm vào giỏ hàng">

@@ -1,7 +1,9 @@
+import { useLocation } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
+
 const adsData = [
   {
     id: 1,
@@ -28,13 +30,22 @@ const adsData = [
     targetId: 'product-section',
   },
 ]
+
 const scrollToSection = (id) => {
   const element = document.getElementById(id)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' })
   }
 }
+
 export default function Slider() {
+  const location = useLocation()
+
+  // Kiểm tra nếu chuyển hướng từ giỏ hàng thì ẩn toàn bộ slider
+  if (location.state?.fromCart) {
+    return null
+  }
+
   return (
     <div className="w-full relative">
       <Swiper
@@ -72,6 +83,7 @@ export default function Slider() {
           </SwiperSlide>
         ))}
       </Swiper>
+
       <style jsx="true" global="true">{`
         .swiper-pagination-bullet {
           background: #fff !important;
