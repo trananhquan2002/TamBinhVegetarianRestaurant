@@ -1,8 +1,9 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import Sitemap from 'vite-plugin-sitemap'
-import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
+import obfuscator from 'vite-plugin-javascript-obfuscator'
+import path from 'path'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   return {
@@ -13,7 +14,23 @@ export default defineConfig(({ mode }) => {
         hostname: 'https://tam-binh-vegetarian-restaurant.vercel.app',
         dynamicRoutes: ['/', '/menu', '/contact'],
       }),
+      obfuscator({
+        compact: true,
+        controlFlowFlattening: true,
+        deadCodeInjection: true,
+        stringArray: true,
+        stringArrayThreshold: 0.75,
+      }),
     ],
+    build: {
+      minify: 'terser',
+      sourcemap: false,
+      terserOptions: {
+        compress: {
+          drop_console: true,
+        },
+      },
+    },
     server: {
       proxy: {
         '/api': {
