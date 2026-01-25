@@ -2,11 +2,13 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import Sitemap from 'vite-plugin-sitemap'
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   return {
     plugins: [
       react(),
+      tailwindcss(),
       Sitemap({
         hostname: 'https://tam-binh-vegetarian-restaurant.vercel.app',
         dynamicRoutes: ['/', '/menu', '/contact'],
