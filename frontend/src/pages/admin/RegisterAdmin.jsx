@@ -47,7 +47,7 @@ export default function RegisterAdmin() {
         </div>
         <div className="space-y-4">
           <div>
-            <input type="text" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Admin Username" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
+            <input type="text" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Tên đăng nhập" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
           </div>
           <div>
             <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Mật khẩu" required onChange={(e) => setFormData({ ...formData, passWord: e.target.value })} />
