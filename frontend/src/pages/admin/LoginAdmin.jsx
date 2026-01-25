@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import { Link } from 'react-router-dom'
 const API_BASE_URL = import.meta.env.VITE_API_URL
-export default function Login() {
+export default function LoginAdmin() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const [userName, setUserName] = useState('')
@@ -23,45 +22,48 @@ export default function Login() {
           login(data)
           navigate('/admin')
         } else {
-          setError('Tài khoản này không có quyền truy cập quản trị')
+          setError('Tài khoản này không có quyền truy cập')
         }
       } else {
-        setError(data.message || 'Tên người dùng hoặc mật khẩu không đúng.')
+        setError(data.message || 'Sai tên đăng nhập hoặc mật khẩu')
       }
     } catch (err) {
-      setError('Không thể kết nối máy chủ.')
+      setError('Lỗi kết nối máy chủ.')
     }
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-400 via-purple-500 to-indigo-700 px-4">
-      <form onSubmit={handleLogin} className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm space-y-4">
-        <h1 className="text-2xl font-bold text-center text-gray-800">Admin Login</h1>
-        <input
-          className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Username"
-          autoComplete="username"
-          onChange={(e) => {
-            setUserName(e.target.value)
-            setError('')
-          }}
-        />
-        <input
-          type="password"
-          className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Password"
-          autoComplete="current-password"
-          onChange={(e) => {
-            setPassWord(e.target.value)
-            setError('')
-          }}
-        />
-        {error && <p className="text-red-500 text-sm text-center font-medium bg-red-50 py-2 rounded">{error}</p>}
-        <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded font-bold transition duration-200 cursor-pointer shadow-md">Đăng nhập</button>
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-indigo-950 px-4">
+      <form onSubmit={handleLogin} className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-black text-gray-800 tracking-tighter uppercase italic">Admin Portal</h1>
+          <p className="text-gray-500 font-bold text-xs mt-1 uppercase tracking-[0.2em]">Quản trị hệ thống</p>
+        </div>
+        <div className="space-y-4">
+          <input
+            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+            placeholder="Admin Username"
+            autoComplete="username"
+            onChange={(e) => {
+              setUserName(e.target.value)
+              setError('')
+            }}
+          />
+          <input
+            type="password"
+            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+            placeholder="Admin Password"
+            autoComplete="current-password"
+            onChange={(e) => {
+              setPassWord(e.target.value)
+              setError('')
+            }}
+          />
+        </div>
+        {error && <p className="text-red-500 text-sm text-center font-bold bg-red-50 py-2 rounded-xl border border-red-100">{error}</p>}
+        <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 cursor-pointer uppercase tracking-widest">Đăng nhập hệ thống</button>
         <div className="text-center pt-2">
-          <Link to="/admin/register">
-            <button type="button" className="text-sm text-indigo-600 hover:underline cursor-pointer">
-              Tạo tài khoản quản trị mới
-            </button>
+          <Link to="/admin/register" className="text-sm text-indigo-600 font-bold">
+            Tạo tài khoản quản trị mới
           </Link>
         </div>
       </form>

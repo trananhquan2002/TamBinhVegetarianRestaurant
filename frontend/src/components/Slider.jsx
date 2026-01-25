@@ -3,13 +3,12 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
-
 const adsData = [
   {
     id: 1,
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070',
     title: 'Đại Tiệc Chay Thanh Tịnh',
-    desc: 'Giảm ngay 20% cho nhóm khách từ 5 người trở lên.',
+    desc: 'Buffet Chay Trọn Gói | Thứ 2 - Thứ 4 & T6 - CN: 99k | Riêng Thứ 5: chỉ 89k',
     buttonText: 'Đặt bàn ngay',
     targetId: 'booking-section',
   },
@@ -30,22 +29,17 @@ const adsData = [
     targetId: 'product-section',
   },
 ]
-
 const scrollToSection = (id) => {
   const element = document.getElementById(id)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' })
   }
 }
-
 export default function Slider() {
   const location = useLocation()
-
-  // Kiểm tra nếu chuyển hướng từ giỏ hàng thì ẩn toàn bộ slider
   if (location.state?.fromCart) {
     return null
   }
-
   return (
     <div className="w-full relative">
       <Swiper
@@ -83,7 +77,6 @@ export default function Slider() {
           </SwiperSlide>
         ))}
       </Swiper>
-
       <style jsx="true" global="true">{`
         .swiper-pagination-bullet {
           background: #fff !important;

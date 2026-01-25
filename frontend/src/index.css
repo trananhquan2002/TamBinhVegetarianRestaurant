@@ -6,3 +6,10 @@ html {
 #booking-section {
   scroll-margin-top: 80px;
 }
+input[type='datetime-local']::-webkit-inner-spin-button,
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+}
+input::placeholder {
+  color: #9ca3af;
+}

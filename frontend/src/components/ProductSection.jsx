@@ -1,57 +1,37 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import ProductCard from './ProductCard'
-
 const API_BASE_URL = import.meta.env.VITE_API_URL
-
 export default function ProductSection() {
-  // --- 1. STATES QUẢN LÝ DỮ LIỆU ---
   const [productData, setProductData] = useState([])
   const [categoriesData, setCategoriesData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  // --- 2. STATES QUẢN LÝ UI & PHÂN TRANG ---
   const [activeCategory, setActiveCategory] = useState('')
   const [activeCategoryName, setActiveCategoryName] = useState('')
   const [itemsToShow, setItemsToShow] = useState(4)
   const itemsPerLoad = 4
-
-  // --- 3. HOOKS (ROUTING & LOCATION) ---
   const { hash, state } = useLocation()
-
-  // Kiểm tra tín hiệu từ trang Cart chuyển sang
   const shouldHideSlider = state?.fromCart
-
-  // --- 4. USE EFFECTS (LOGIC NGHIỆP VỤ) ---
-
-  // Khởi tạo: Gọi API lấy dữ liệu sản phẩm và danh mục
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [prodRes, catRes] = await Promise.all([fetch(`${API_BASE_URL}/api/menu`), fetch(`${API_BASE_URL}/api/categories`)])
         if (!prodRes.ok) throw new Error('Lỗi tải menu')
-
         const prodJson = await prodRes.json()
         const catJson = await catRes.json()
-
-        // Xử lý danh mục mặc định (ưu tiên 'Mang về')
         const limitedCategories = catJson.slice(0, 3)
         setCategoriesData(limitedCategories)
-
         const mangVeCategory = limitedCategories.find((cat) => cat.name === 'Mang về')
         if (mangVeCategory) {
           setActiveCategory(mangVeCategory._id)
         } else if (limitedCategories.length > 0) {
           setActiveCategory(limitedCategories[0]._id)
         }
-
-        // Xử lý đường dẫn ảnh sản phẩm
         const mappedProducts = (prodJson.data || prodJson).map((p) => ({
           ...p,
           image: `/assets/images/${p.image}`,
         }))
-
         setProductData(mappedProducts)
         setCategoriesData(catJson)
       } catch (e) {
@@ -62,14 +42,10 @@ export default function ProductSection() {
     }
     fetchData()
   }, [])
-
-  // Theo dõi để cập nhật tên danh mục đang hoạt động
   useEffect(() => {
     const activeCat = categoriesData.find((c) => c._id === activeCategory)
     if (activeCat) setActiveCategoryName(activeCat.name)
   }, [activeCategory, categoriesData])
-
-  // Xử lý cuộn trang khi có Hash từ URL (Ví dụ: từ trang Cart chuyển về)
   useEffect(() => {
     if (hash === '#product-section') {
       const element = document.getElementById('product-section')
@@ -80,16 +56,10 @@ export default function ProductSection() {
       }
     }
   }, [hash])
-
-  // --- 5. FUNCTIONS (XỬ LÝ SỰ KIỆN) ---
-
-  // Xử lý khi chuyển Tab danh mục
   const handleTabChange = (id) => {
     setActiveCategory(id)
     setItemsToShow(4)
   }
-
-  // Xử lý logic nút Xem thêm / Thu gọn
   function HandleClicViewMore() {
     if (!isShowMore) {
       setItemsToShow(4)
@@ -99,36 +69,25 @@ export default function ProductSection() {
       setItemsToShow((prev) => prev + itemsPerLoad)
     }
   }
-
-  // Cuộn xuống phần đặt bàn (dành cho Buffet)
   const scrollToBooking = () => {
     const bookingSection = document.getElementById('booking-section')
     if (bookingSection) {
       bookingSection.scrollIntoView({ behavior: 'smooth' })
     }
   }
-
-  // Tính giá Buffet theo ngày trong tuần
   const getBuffetPrice = () => {
     const today = new Date().getDay()
     return today === 4 ? '89.000' : '99.000'
   }
-
-  // --- 6. LOGIC LỌC SẢN PHẨM HIỂN THỊ ---
   const filteredByTab = productData.filter((p) => p.categoryId?.toString() === activeCategory?.toString())
   const visibleProducts = filteredByTab.slice(0, itemsToShow)
   const isShowMore = itemsToShow < filteredByTab.length
-
-  // --- 7. RENDER GIAO DIỆN ---
   if (isLoading) return <div className="text-center py-8 italic">Đang tải menu...</div>
   if (error) return <div className="text-center py-8 text-red-600 font-bold">{error}</div>
-
   return (
     <>
       <section id="product-section" className="max-w-7xl mx-auto px-4 py-8">
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Thực đơn Tâm Bình</h2>
-
-        {/* Tabs Danh mục */}
         <div className="flex justify-center mb-10 px-2">
           <ul className="flex bg-gray-200 p-1.5 rounded-full w-full max-w-md md:max-w-max overflow-hidden">
             {categoriesData.map((cat) => (
@@ -142,8 +101,6 @@ export default function ProductSection() {
             ))}
           </ul>
         </div>
-
-        {/* Nội dung chính: Buffet hoặc Danh sách món */}
         {activeCategoryName === 'Buffet' ? (
           <div className="bg-linear-to-r from-amber-50 to-orange-100 rounded-3xl p-8 mb-10 border border-orange-200 shadow-sm">
             <div className="flex flex-col md:flex-row items-center gap-8">
@@ -171,8 +128,6 @@ export default function ProductSection() {
                 <ProductCard key={item._id} {...item} />
               ))}
             </div>
-
-            {/* Nút xem thêm */}
             {filteredByTab.length > 4 && (
               <div className="text-center mt-12">
                 <button onClick={HandleClicViewMore} className="bg-gray-900 text-white px-10 py-3 rounded-xl hover:bg-yellow-500 font-bold shadow-lg cursor-pointer transition-colors">
@@ -182,8 +137,6 @@ export default function ProductSection() {
             )}
           </>
         )}
-
-        {/* Thông báo khi trống */}
         {filteredByTab.length === 0 && activeCategoryName !== 'Buffet' && <div className="text-center text-gray-400 py-10 italic">Chưa có món ăn nào trong danh mục này</div>}
       </section>
     </>

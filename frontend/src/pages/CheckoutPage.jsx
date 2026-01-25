@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext'
 import { FiMapPin, FiTruck, FiCreditCard } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-
 const HA_NOI_AREAS = [
   { name: 'Quận Cầu Giấy', lat: 21.0362, lng: 105.7908 },
   { name: 'Quận Thanh Xuân', lat: 20.9937, lng: 105.8119 },
@@ -39,7 +38,6 @@ const HA_NOI_AREAS = [
 ]
 const RESTAURANT_COORDS = { lat: 21.0123, lng: 105.8123 }
 const API_BASE_URL = import.meta.env.VITE_API_URL
-
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const { user } = useAuth()

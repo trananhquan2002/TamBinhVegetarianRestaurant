@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 const API_BASE_URL = import.meta.env.VITE_API_URL
-export default function Register() {
+export default function RegisterAdmin() {
   const navigate = useNavigate()
   const { admin } = useAuth()
   const [formData, setFormData] = useState({ userName: '', passWord: '', confirmPass: '' })
@@ -11,13 +11,16 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
-    if (formData.passWord.length < 6) return setError('Mật khẩu phải ít nhất 6 ký tự.')
+    if (formData.passWord.length < 6) return setError('Mật khẩu tối thiểu 6 ký tự.')
     if (formData.passWord !== formData.confirmPass) return setError('Mật khẩu không khớp.')
     setLoading(true)
     try {
       const res = await fetch(`${API_BASE_URL}/api/register-admin`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin?.token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`,
+        },
         body: JSON.stringify({
           userName: formData.userName,
           passWord: formData.passWord,
@@ -36,33 +39,33 @@ export default function Register() {
     }
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-400 via-purple-500 to-indigo-700 px-4">
-      <form onSubmit={handleRegister} className="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm space-y-5">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-indigo-950 px-4">
+      <form onSubmit={handleRegister} className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-extrabold text-gray-800">Đăng ký Admin</h1>
-          <p className="text-gray-500 text-sm mt-1">Tạo thêm tài khoản quản trị hệ thống</p>
+          <h1 className="text-3xl font-black text-gray-800 tracking-tighter uppercase">New Admin</h1>
+          <p className="text-gray-500 font-bold text-xs mt-1 uppercase tracking-widest">Thêm tài khoản quản trị</p>
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-semibold text-gray-600">Username</label>
-            <input className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 outline-none transition" placeholder="Tên đăng nhập" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
+            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Tên đăng nhập</label>
+            <input className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="Username" required onChange={(e) => setFormData({ ...formData, userName: e.target.value })} />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-600">Mật khẩu</label>
-            <input type="password" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 outline-none transition" placeholder="Mật khẩu" required onChange={(e) => setFormData({ ...formData, passWord: e.target.value })} />
+            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Mật khẩu</label>
+            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="••••••••" required onChange={(e) => setFormData({ ...formData, passWord: e.target.value })} />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-600">Xác nhận mật khẩu</label>
-            <input type="password" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 outline-none transition" placeholder="Xác nhận mật khẩu" required onChange={(e) => setFormData({ ...formData, confirmPass: e.target.value })} />
+            <label className="text-xs font-bold text-gray-400 ml-4 mb-1 block uppercase">Xác nhận</label>
+            <input type="password" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium" placeholder="••••••••" required onChange={(e) => setFormData({ ...formData, confirmPass: e.target.value })} />
           </div>
         </div>
-        {error && <p className="text-red-500 text-sm text-center bg-red-50 py-2 rounded-lg border border-red-100 font-medium">{error}</p>}
-        <button disabled={loading} className={`w-full ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'} text-white font-bold py-3 rounded-lg transition-all shadow-lg cursor-pointer`}>
-          {loading ? 'Đang xử lý...' : 'Đăng ký ngay'}
+        {error && <p className="text-red-500 text-sm text-center font-bold bg-red-50 py-2 rounded-xl border border-red-100">{error}</p>}
+        <button disabled={loading} className={`w-full ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 active:scale-95 cursor-pointer'} text-white font-bold py-4 rounded-2xl transition-all shadow-xl uppercase tracking-widest`}>
+          {loading ? 'Đang khởi tạo...' : 'Tạo tài khoản'}
         </button>
-        <div className="text-center pt-2">
-          <Link to="/admin/login" className="text-indigo-600 hover:underline text-sm font-medium">
-            Đã có tài khoản? Quay lại Đăng nhập
+        <div className="text-center">
+          <Link to="/admin/login" className="text-indigo-600 hover:underline text-sm font-bold uppercase tracking-tight">
+            Quay lại đăng nhập
           </Link>
         </div>
       </form>
