@@ -145,7 +145,8 @@ router.post('/reservation', async (req, res) => {
     if (!fullName || !phone || !quantity || !time) return res.status(400).json({ message: 'Thiếu thông tin!' })
     const existing = await Reservation.findOne({ phone, status: 'pending' })
     if (existing) return res.status(400).json({ message: 'Số điện thoại này đang có lịch chờ!' })
-    const newReservation = new Reservation({ fullName, phone, quantity, time: new Date(time) })
+    const vnTime = new Date(time + ':00+07:00')
+    const newReservation = new Reservation({ fullName, phone, quantity, time: vnTime })
     await newReservation.save()
     const newNoti = new Notification({
       type: 'reservation',
