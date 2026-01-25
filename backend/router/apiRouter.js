@@ -1,7 +1,7 @@
 import { Router } from 'express'
-const router = Router()
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { createClient } from 'redis'
 import Product from '../models/Product.js'
 import Category from '../models/Category.js'
 import User from '../models/User.js'
@@ -10,7 +10,9 @@ import Feedback from '../models/Feedback.js'
 import Order from '../models/Order.js'
 import Notification from '../models/Notification.js'
 import Admin from '../models/Admin.js'
+const router = Router()
 const SECRET_KEY = process.env.JWT_SECRET
+const REDIS_URL = process.env.REDIS_URL
 
 // ==========================================
 // MIDDLEWARE PHÂN QUYỀN (AUTHORIZATION)
@@ -35,6 +37,16 @@ const isAdmin = (req, res, next) => {
     }
   })
 }
+
+// ==========================================
+// KẾT NỐI REDIS CLOUD
+// ==========================================
+
+const redisClient = createClient({
+  url: REDIS_URL,
+})
+redisClient.on('error', (err) => console.log('Redis Client Error', err))
+await redisClient.connect().then(() => console.log('✅ Đã kết nối Redis Cloud'))
 
 // ==========================================
 // 1. NHÓM API ĐƠN HÀNG (ORDERS)
@@ -230,7 +242,12 @@ router.get('/feedbacks', isAdmin, async (req, res) => {
 
 router.get('/menu', async (req, res) => {
   try {
+    const cachedMenu = await redisClient.get('menu_data')
+    if (cachedMenu) {
+      return res.status(200).json({ data: JSON.parse(cachedMenu) })
+    }
     const menuItems = await Product.find()
+    await redisClient.setEx('menu_data', 3600, JSON.stringify(menuItems))
     res.status(200).json({ data: menuItems })
   } catch (err) {
     res.status(500).json({ message: err.message })
@@ -239,7 +256,12 @@ router.get('/menu', async (req, res) => {
 
 router.get('/categories', async (req, res) => {
   try {
+    const cachedCats = await redisClient.get('categories_data')
+    if (cachedCats) {
+      return res.status(200).json(JSON.parse(cachedCats))
+    }
     const cats = await Category.find()
+    await redisClient.setEx('categories_data', 3600, JSON.stringify(cats))
     res.status(200).json(cats)
   } catch (err) {
     res.status(500).json({ message: err.message })
