@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
@@ -45,29 +44,6 @@ function CustomerLayout() {
   )
 }
 export default function App() {
-  useEffect(() => {
-    const handleContextMenu = (e) => e.preventDefault()
-    const handleKeyDown = (e) => {
-      if (e.keyCode === 123) {
-        e.preventDefault()
-        return false
-      }
-      if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-        e.preventDefault()
-        return false
-      }
-      if (e.ctrlKey && e.keyCode === 85) {
-        e.preventDefault()
-        return false
-      }
-    }
-    window.addEventListener('contextmenu', handleContextMenu)
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('contextmenu', handleContextMenu)
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
   return (
     <AuthProvider>
       <Routes>

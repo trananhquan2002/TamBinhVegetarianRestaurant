@@ -17,9 +17,13 @@ export default defineConfig(({ mode }) => {
       obfuscator({
         compact: true,
         controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.75,
         deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.4,
         stringArray: true,
         stringArrayThreshold: 0.75,
+        transformObjectKeys: true,
+        unicodeArrayEscapeSequence: true,
       }),
     ],
     build: {
@@ -28,6 +32,22 @@ export default defineConfig(({ mode }) => {
       terserOptions: {
         compress: {
           drop_console: true,
+          drop_debugger: true,
+        },
+        output: {
+          comments: false,
+        },
+      },
+      rollupOptions: {
+        output: {
+          entryFileNames: `assets/[hash].js`,
+          chunkFileNames: `assets/[hash].js`,
+          assetFileNames: `assets/[hash].[ext]`,
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return 'vendor'
+            }
+          },
         },
       },
     },
