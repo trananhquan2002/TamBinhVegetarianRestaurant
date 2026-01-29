@@ -72,7 +72,7 @@ export default function CartList() {
                 <span className="text-gray-500 text-xs">Tổng thanh toán</span>
                 <span className="text-xl font-bold text-red-500">{formatCurrency(cartTotal)}</span>
               </div>
-              <Link to="/checkout" className="flex-1 max-w-50 bg-[#fe2c55] text-white text-center py-3 rounded-full font-bold hover:bg-[#ef2950] transition-colors">
+              <Link to="/checkout" state={{ fromCart: true }} className="flex-1 max-w-50 bg-[#fe2c55] text-white text-center py-3 rounded-full font-bold hover:bg-[#ef2950] transition-colors">
                 Đặt hàng
               </Link>
             </div>

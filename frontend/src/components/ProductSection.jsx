@@ -86,7 +86,7 @@ export default function ProductSection() {
   if (error) return <div className="text-center py-8 text-red-600 font-bold">{error}</div>
   return (
     <>
-      <section id="product-section" className="max-w-7xl mx-auto px-4 py-8">
+      <section id="product-section" className={`max-w-7xl mx-auto px-4 py-8 ${shouldHideSlider ? 'pt-24' : 'py-8'}`}>
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Thực đơn Tâm Bình</h2>
         <div className="flex justify-center mb-10 px-2">
           <ul className="flex bg-gray-200 p-1.5 rounded-full w-full max-w-md md:max-w-max overflow-hidden">

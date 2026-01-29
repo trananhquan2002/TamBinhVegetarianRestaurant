@@ -13,7 +13,7 @@ export default function Login() {
   const [userName, setUserName] = useState('')
   const [passWord, setPassWord] = useState('')
   const [error, setError] = useState('')
-  const from = location.state?.from?.pathname
+  const from = location.state?.from?.pathname || '/'
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse) => {
       const loadingToast = toast.loading('Đang xác thực với Google...')
@@ -30,7 +30,7 @@ export default function Login() {
         if (response.ok) {
           login(data)
           toast.success('Chào mừng ' + data.userName + ' đã quay trở lại!')
-          navigate(from, { replace: true })
+          navigate(from, { replace: true, state: {} })
         } else {
           toast.error(data.message || 'Tài khoản không được phép truy cập')
         }
@@ -56,7 +56,7 @@ export default function Login() {
       const data = await res.json()
       if (res.ok) {
         login(data)
-        navigate(from, { replace: true })
+        navigate(from, { replace: true, state: {} })
       } else {
         setError(data.message || 'Tên người dùng hoặc mật khẩu không đúng.')
       }
