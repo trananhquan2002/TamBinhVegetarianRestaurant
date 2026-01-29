@@ -72,8 +72,8 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden shadow-md border-4 border-white h-80">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.588147775928!2d105.80165747515124!3d21.00913998845421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac9633857e23%3A0xc3910c22622839b9!2zTmjDoCBow6BuZyBjaGF5IFTDom0gQsOsbmggLSBCdWZmZXQgY2hheSA1MGsgQ-G6p3UgR2nhuqV5!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" title="Tâm Bình Map"></iframe>
+            <div className="w-full h-112.5 overflow-hidden rounded-2xl shadow-lg border border-white/10">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.635135011536!2d105.8049655!3d21.007258000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ad3df07e83df%3A0x1886ff9c734bd977!2sBuffet%20chay%20T%C3%A2m%20B%C3%ACnh!5e0!3m2!1sen!2s!4v1769708023320!5m2!1sen!2s" width="600" height="450" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Bản đồ nhà hàng chay Tâm Bình"></iframe>
             </div>
           </section>
           <section className="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-gray-50">

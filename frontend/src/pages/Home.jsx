@@ -14,8 +14,8 @@ export default function Home() {
         <link rel="canonical" href="https://tam-binh-vegetarian-restaurant.vercel.app/" />
       </Helmet>
       <Slider />
-      <ProductSection />
       <AboutSection />
+      <ProductSection />
       <ReservationSection />
     </main>
   )
