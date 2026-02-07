@@ -232,18 +232,20 @@ export default function OrderManager() {
               </button>
               <h3 className="text-xl sm:text-2xl font-black uppercase mb-6 text-gray-800">Món đã đặt</h3>
               <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-                {(selectedOrder.items || selectedOrder.cartItems || []).map((item, i) => (
-                  <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-black text-green-600 text-xs shadow-sm">{item.quantity}</div>
-                      <div>
-                        <p className="font-bold text-gray-800 text-sm">{item.title}</p>
-                        <p className="text-[9px] text-gray-400 font-black uppercase">{item.price?.toLocaleString()}đ</p>
+                {(selectedOrder.items || selectedOrder.cartItems || []).map((item, i) => {
+                  return (
+                    <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-gray-50 border border-gray-100 mb-3 hover:bg-white hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-black text-green-600 text-sm shadow-sm shrink-0 border border-gray-100">{item.quantity}</div>
+                        <div>
+                          <p className="font-bold text-gray-800 text-sm sm:text-base line-clamp-1 mb-1">{item.title}</p>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-extrabold uppercase tracking-wide">Đơn giá: {item.price?.toLocaleString()}đ</p>
+                        </div>
                       </div>
+                      <p className="font-black text-gray-800 text-sm sm:text-base ml-2">{(item.price * item.quantity).toLocaleString()}đ</p>
                     </div>
-                    <p className="font-black text-gray-800 text-sm">{(item.price * item.quantity).toLocaleString()}đ</p>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
               <div className="mt-6 bg-gray-900 p-6 rounded-[30px] flex justify-between items-center">
                 <div className="min-w-0">
