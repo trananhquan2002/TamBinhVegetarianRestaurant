@@ -13,10 +13,10 @@ const orderSchema = new Schema(
     cartItems: [
       {
         productId: { type: Schema.Types.ObjectId, ref: 'products' },
-        title: { type: String, ref: 'products' },
+        title: { type: String },
         quantity: { type: Number },
-        price: { type: Number, ref: 'products' },
-        image: { type: String, ref: 'products' },
+        price: { type: Number },
+        image: { type: String },
       },
     ],
     subTotal: { type: Number, default: 0 },
