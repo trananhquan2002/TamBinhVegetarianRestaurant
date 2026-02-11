@@ -65,6 +65,7 @@ router.post('/orders', async (req, res) => {
           title: productInfo.title,
           quantity: item.quantity,
           price: productInfo.price,
+          image: productInfo.image,
         }
       })
     )
