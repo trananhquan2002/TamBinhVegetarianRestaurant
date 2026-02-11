@@ -239,7 +239,7 @@ export default function OrderManager() {
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-black text-green-600 text-sm shadow-sm shrink-0 border border-gray-100">{item.quantity}</div>
                         <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl overflow-hidden border border-gray-100 shrink-0 shadow-xs">
                           <img
-                            src={`${import.meta.env.VITE_API_URL}/assets/images/${item.image}`}
+                            src={item.image ? `/assets/images/${item.image.split('/').pop()}` : 'https://via.placeholder.com/150'}
                             alt={item.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
