@@ -9,7 +9,7 @@ export default function Menu() {
         <title>Thực Đơn Buffet Chay 50 Món Đặc Sắc - Tâm Bình</title>
         <meta name="description" content="Khám phá danh sách các món chay đa dạng: từ súp, món chính đến tráng miệng tại nhà hàng chay Tâm Bình. Nguyên liệu tươi sạch, thuần khiết." />
         <meta property="og:title" content="Thực Đơn Buffet Chay Đặc Sắc - Tâm Bình Restaurant" />
-        <link rel="canonical" href="https://tam-binh-vegetarian-restaurant.vercel.app/menu" />
+        <link rel="canonical" href="https://www.chaytambinh.vn/menu" />
       </Helmet>
       <Slider />
       <ProductSection />

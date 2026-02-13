@@ -31,7 +31,7 @@ export default function Contact() {
       <Helmet>
         <title>Liên Hệ Nhà Hàng Chay Tâm Bình - Đặt Bàn Ngay</title>
         <meta name="description" content="Hỗ trợ đặt bàn nhanh chóng. Hotline: 0984832086. Địa chỉ: B33 Ng. 70 P. Nguyễn Thị Định, Trung Hoà, Cầu Giấy, Hà Nội." />
-        <link rel="canonical" href="https://tam-binh-vegetarian-restaurant.vercel.app/contact" />
+        <link rel="canonical" href="https://www.chaytambinh.vn/contact" />
       </Helmet>
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">

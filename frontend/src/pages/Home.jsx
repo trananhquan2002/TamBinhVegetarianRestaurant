@@ -11,7 +11,7 @@ export default function Home() {
         <meta name="description" content="Thưởng thức buffet chay thanh đạm với hơn 50 món ăn mỗi ngày tại Tâm Bình Restaurant. Không gian thanh tịnh, tọa lạc tại Cầu Giấy, Hà Nội." />
         <meta property="og:title" content="Nhà Hàng Chay Tâm Bình - Buffet Chay Thanh Đạm" />
         <meta property="og:description" content="Hơn 50 món chay mỗi ngày đang chờ đón bạn tại Cầu Giấy." />
-        <link rel="canonical" href="https://tam-binh-vegetarian-restaurant.vercel.app/" />
+        <link rel="canonical" href="https://www.chaytambinh.vn/" />
       </Helmet>
       <Slider />
       <AboutSection />

@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       Sitemap({
-        hostname: 'https://tam-binh-vegetarian-restaurant.vercel.app',
+        hostname: 'https://www.chaytambinh.vn',
         dynamicRoutes: ['/', '/menu', '/contact'],
       }),
       obfuscator({
