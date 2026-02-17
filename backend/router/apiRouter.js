@@ -93,6 +93,7 @@ router.post('/orders', async (req, res) => {
       type: 'order',
       content: `Đơn hàng mới ${orderCode} từ khách ${customerName} (${totalAmount.toLocaleString()}đ)`,
       isRead: false,
+      relatedId: newOrder._id,
     })
     await newNoti.save()
     const io = req.app.get('socketio')
@@ -165,6 +166,7 @@ router.post('/reservation', async (req, res) => {
       type: 'reservation',
       content: `Khách hàng ${fullName} vừa đặt bàn cho ${quantity} người`,
       isRead: false,
+      relatedId: newReservation._id,
     })
     await newNoti.save()
     const io = req.app.get('socketio')
@@ -218,7 +220,12 @@ router.post('/feedback', async (req, res) => {
     if (!name || !phone || !message) return res.status(400).json({ message: 'Thiếu thông tin!' })
     const newFeedback = new Feedback({ name, phone, message, isRead: false })
     await newFeedback.save()
-    const newNoti = new Notification({ type: 'feedback', content: `Khách hàng ${name} vừa gửi góp ý`, isRead: false })
+    const newNoti = new Notification({
+      type: 'feedback',
+      content: `Khách hàng ${name} vừa gửi góp ý`,
+      isRead: false,
+      relatedId: newFeedback._id,
+    })
     await newNoti.save()
     const io = req.app.get('socketio')
     if (io) {

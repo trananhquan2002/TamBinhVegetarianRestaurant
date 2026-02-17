@@ -7,6 +7,7 @@ const reservationSchema = new Schema(
     time: { type: Date, required: true },
     status: { type: String, default: 'pending' },
     createdAt: { type: Date, default: Date.now },
+    relatedId: { type: Schema.Types.ObjectId },
   },
   { versionKey: false, timestamps: true }
 )

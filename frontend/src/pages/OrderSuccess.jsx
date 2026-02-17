@@ -43,76 +43,86 @@ export default function OrderSuccess() {
   }, [order?._id])
   if (!order) return <div className="p-10 text-center font-bold">Không tìm thấy đơn hàng...</div>
   return (
-    <div className="min-h-screen bg-[#F8F8F8] flex flex-col items-center justify-start sm:justify-center p-4 sm:p-8">
-      <div className="w-full max-w-lg flex flex-col items-center animate-fadeIn">
-        <div className="bg-white w-full rounded-[40px] p-8 sm:p-10 shadow-sm text-center mb-4 transition-all">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className={`${isConfirmed ? 'bg-green-50' : 'bg-blue-50'} p-6 rounded-full relative z-10`}>{isConfirmed ? <FaCheckCircle className="text-green-500 text-6xl animate-bounce" /> : <FiClock className="text-blue-500 text-6xl animate-pulse" />}</div>
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col items-center p-0 sm:p-8 antialiased">
+      <div className="w-full max-w-lg animate-fadeIn">
+        <div className={`w-full p-8 text-white relative overflow-hidden ${isConfirmed ? 'bg-[#00B34D]' : 'bg-[#FE2C55]'} sm:rounded-b-[40px] shadow-lg`}>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="mb-4 bg-white/20 p-4 rounded-full backdrop-blur-md">{isConfirmed ? <FaCheckCircle className="text-white text-5xl animate-bounce" /> : <FiClock className="text-white text-5xl animate-pulse" />}</div>
+            <h1 className="text-2xl font-black tracking-tight mb-2 uppercase">{isConfirmed ? 'Đã xác nhận đơn hàng' : 'Đang chờ xử lý'}</h1>
+            <p className="text-white/80 text-sm font-medium px-6 leading-relaxed">
+              Chào <span className="text-white font-black">{order.customerName}</span>, {isConfirmed ? 'đơn hàng của bạn đang được chuẩn bị và sẽ giao đến bạn sớm nhất.' : 'đơn hàng đã được gửi đi. Vui lòng đợi trong giây lát để nhà hàng xác nhận.'}
+            </p>
+          </div>
+          <FaHome size={150} className="absolute -bottom-10 -right-10 opacity-10 rotate-12" />
+        </div>
+        <div className="px-4 -mt-6 relative z-20">
+          <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex items-start gap-4">
+            <div className="bg-red-50 p-3 rounded-full shrink-0">
+              <FaMapMarkerAlt className="text-[#FE2C55]" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-black text-xs uppercase tracking-wider text-gray-800">Địa chỉ nhận hàng</span>
+              </div>
+              <p className="text-sm font-bold text-gray-900 mb-0.5">
+                {order.customerName} | {order.phone}
+              </p>
+              <p className="text-xs text-gray-500 leading-relaxed italic">{order.address?.detail || order.address}</p>
             </div>
           </div>
-          <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full uppercase mb-5 text-[11px] font-bold ${isConfirmed ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-            <span className={`w-2 h-2 rounded-full ${isConfirmed ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}`}></span>
-            {isConfirmed ? 'Nhà hàng đã xác nhận' : 'Đang chờ nhà hàng duyệt'}
-          </div>
-          <h1 className="text-2xl font-black tracking-tight mb-2">{isConfirmed ? 'ĐÃ DUYỆT ĐƠN HÀNG' : 'ĐẶT HÀNG THÀNH CÔNG'}</h1>
-          <p className="text-gray-500 text-sm leading-relaxed px-4">
-            Chào <span className="font-bold text-black">{order.customerName}</span>, {isConfirmed ? 'đơn hàng của bạn đã được nhà hàng xác nhận và sẽ sớm giao đến bạn nhanh nhất có thể.' : 'đơn hàng đã được gửi tới hệ thống. Vui lòng giữ máy, nhà hàng sẽ sớm xác nhận đơn hàng của bạn.'}
-          </p>
         </div>
-        <div className="bg-white w-full rounded-[40px] p-8 shadow-sm space-y-6">
-          <h3 className="font-bold text-gray-800 border-b border-gray-50 pb-4 flex items-center gap-2 uppercase text-xs tracking-widest">
-            <FiCheckCircle className="text-green-500" /> Chi tiết đơn hàng
-          </h3>
-          <div className="space-y-4">
-            {(order.items || []).map((item, idx) => (
-              <div key={idx} className="flex justify-between items-start">
-                <div className="flex gap-3">
-                  <div className="bg-gray-100 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold text-gray-600">{item.quantity}</div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">{item.title}</p>
-                    <p className="text-[10px] text-gray-400">Đơn giá: {item.price.toLocaleString()}đ</p>
+        <div className="px-4 mt-4">
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+            <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-[11px] tracking-widest">
+              <FiCheckCircle className="text-green-500 text-lg" /> Chi tiết đơn hàng
+            </h3>
+            <div className="space-y-6">
+              {(order.cartItems || order.items || []).map((item, idx) => (
+                <div key={idx} className="flex gap-4">
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-50">{item.image ? <img src={item.image ? `/assets/images/${item.image.split('/').pop()}` : 'https://via.placeholder.com/150'} alt={item.title} className="w-full h-full object-cover" /> : <FaHome className="text-gray-300" />}</div>
+                    <div className="absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black">{item.quantity}</div>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <p className="text-sm font-black text-gray-800 line-clamp-1 uppercase tracking-tight">{item.title}</p>
+                    <p className="text-xs text-gray-400 mt-1 font-medium">Đơn giá: {item.price.toLocaleString()}đ</p>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm font-black text-gray-800">{(item.price * item.quantity).toLocaleString()}đ</span>
                   </div>
                 </div>
-                <span className="text-sm font-bold text-gray-700">{(item.price * item.quantity).toLocaleString()}đ</span>
+              ))}
+            </div>
+            <div className="mt-8 pt-6 border-t border-dashed border-gray-100 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400 font-medium">Tổng tiền hàng</span>
+                <span className="text-gray-700 font-bold">{order.subTotal?.toLocaleString()}đ</span>
               </div>
-            ))}
-          </div>
-          <div className="bg-gray-50 rounded-3xl p-5 space-y-3">
-            <div className="flex justify-between text-xs font-medium text-gray-500">
-              <span>Tạm tính</span>
-              <span>{order.subTotal?.toLocaleString()}đ</span>
-            </div>
-            <div className="flex justify-between text-xs font-medium text-gray-500">
-              <span>Phí vận chuyển</span>
-              <span>+{order.shippingFee?.toLocaleString()}đ</span>
-            </div>
-            <div className="flex justify-between items-center pt-3 border-t border-dashed border-gray-200">
-              <span className="text-sm font-black uppercase">Tổng thanh toán</span>
-              <span className="text-xl font-black text-[#FE2C55]">{(order.totalAmount || order.subTotal + order.shippingFee).toLocaleString()}đ</span>
-            </div>
-          </div>
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <FaMapMarkerAlt className="text-gray-400 shrink-0" />
-              <p className="line-clamp-1 italic">{order.address?.detail || order.address}</p>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <FaPhoneAlt className="text-gray-400 shrink-0" />
-              <p className="font-bold">{order.phone}</p>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400 font-medium">Phí vận chuyển</span>
+                <span className="text-gray-700 font-bold">+{order.shippingFee?.toLocaleString()}đ</span>
+              </div>
+              <div className="flex justify-between items-center pt-4 mt-2">
+                <span className="text-sm font-black uppercase tracking-tighter">Tổng thanh toán</span>
+                <span className="text-2xl font-black text-[#FE2C55]">{(order.totalAmount || order.subTotal + order.shippingFee).toLocaleString()}đ</span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="w-full space-y-3 mt-6">
-          <button onClick={() => navigate('/')} className="w-full bg-[#FE2C55] hover:bg-[#ef294e] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-red-100 uppercase text-xs tracking-[0.2em] cursor-pointer">
-            <FaHome /> Quay về trang chủ
+        <div className="px-4 mt-8 space-y-4 mb-12">
+          <button onClick={() => navigate('/')} className="w-full bg-black hover:bg-gray-900 text-white py-4 rounded-[20px] font-black flex items-center justify-center gap-3 active:scale-[0.97] transition-all uppercase text-xs tracking-widest shadow-xl shadow-gray-200 cursor-pointer">
+            <FaHome /> Tiếp tục mua sắm
           </button>
-        </div>
-        <div className="mt-8 mb-10 w-full text-center">
-          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-2">Cần thay đổi thông tin?</p>
-          <a href="tel:0984832086" className="text-red-500 font-black text-lg hover:underline transition-all">
-            Hotline: 0984 832 086
-          </a>
+          <div className="bg-white rounded-3xl p-6 text-center border border-gray-100">
+            <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-3">Bạn cần hỗ trợ gấp?</p>
+            <a href="tel:0984832086" className="inline-flex items-center gap-3 text-[#FE2C55] font-black text-xl hover:scale-105 transition-transform">
+              <div className="bg-red-50 p-2 rounded-full">
+                <FaPhoneAlt className="text-sm" />
+              </div>
+              0984832086
+            </a>
+          </div>
+          <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">Cảm ơn bạn đã tin tưởng Tâm Bình!</p>
         </div>
       </div>
     </div>

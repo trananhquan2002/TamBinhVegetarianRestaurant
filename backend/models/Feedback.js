@@ -5,6 +5,7 @@ const feedbackSchema = new Schema(
     phone: { type: String, required: true },
     message: { type: String, required: true },
     isRead: { type: Boolean, default: false },
+    relatedId: { type: Schema.Types.ObjectId },
   },
   { timestamps: true, versionKey: false }
 )
