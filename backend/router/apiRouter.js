@@ -216,12 +216,15 @@ router.post('/feedback', async (req, res) => {
   const { name, phone, message } = req.body
   try {
     if (!name || !phone || !message) return res.status(400).json({ message: 'Thiếu thông tin!' })
-    const newFeedback = new Feedback({ name, phone, message, createdAt: new Date() })
+    const newFeedback = new Feedback({ name, phone, message, isRead: false })
     await newFeedback.save()
     const newNoti = new Notification({ type: 'feedback', content: `Khách hàng ${name} vừa gửi góp ý`, isRead: false })
     await newNoti.save()
     const io = req.app.get('socketio')
-    if (io) io.emit('new_activity', newNoti)
+    if (io) {
+      io.emit('new_activity', newNoti)
+      io.emit('update_stats')
+    }
     return res.status(200).json({ message: 'Cảm ơn bạn đã góp ý!' })
   } catch (err) {
     return res.status(500).json({ message: 'Lỗi server!' })
@@ -366,7 +369,7 @@ router.post('/login-admin', async (req, res) => {
 })
 
 // ==========================================
-// 6. NHÓM API THỐNG KÊ (DASHBOARD)
+// 6. NHÓM API THỐNG KÊ & THÔNG BÁO (DASHBOARD)
 // ==========================================
 
 router.get('/stats', isAdmin, async (req, res) => {
@@ -387,12 +390,24 @@ router.get('/stats', isAdmin, async (req, res) => {
   }
 })
 
+// API lấy danh sách thông báo chưa đọc
 router.get('/notifications', isAdmin, async (req, res) => {
   try {
-    const data = await Notification.find().sort({ createdAt: -1 }).limit(15)
+    const data = await Notification.find({ isRead: false }).sort({ createdAt: -1 }).limit(20)
     res.status(200).json(data)
   } catch (err) {
     res.status(500).json({ message: err.message })
+  }
+})
+
+// API cập nhật ĐÃ XEM TẤT CẢ
+router.put('/notifications/read-all', isAdmin, async (req, res) => {
+  try {
+    await Notification.updateMany({ isRead: false }, { $set: { isRead: true } })
+    await Feedback.updateMany({ isRead: false }, { $set: { isRead: true } })
+    res.status(200).json({ success: true, message: 'Đã đánh dấu xem tất cả' })
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi cập nhật: ' + err.message })
   }
 })
 

@@ -4,7 +4,7 @@ const feedbackSchema = new Schema(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     message: { type: String, required: true },
-    status: { type: String, default: 'unread' },
+    isRead: { type: Boolean, default: false },
   },
   { timestamps: true, versionKey: false }
 )

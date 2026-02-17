@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { FaUsers, FaClipboardList, FaUtensils, FaMoneyBillWave } from 'react-icons/fa'
 import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
@@ -15,6 +15,13 @@ export default function AdminHome() {
     reservations: 0,
     revenue: 0,
   })
+  const [showMenu, setShowMenu] = useState(false)
+  const audioPlayer = useRef(new Audio('/assets/sound/success-chime.mp3'))
+  const playNotificationSound = () => {
+    const audio = audioPlayer.current
+    audio.currentTime = 0
+    audio.play.catch((err) => console.log('Chờ tương tác người dùng để phát âm thanh'))
+  }
   const fetchStats = useCallback(async () => {
     if (!admin?.token) return
     try {
@@ -37,20 +44,37 @@ export default function AdminHome() {
       console.error('Lỗi fetchStats:', err)
     }
   }, [admin?.token, logout, navigate])
+  const handleReadAll = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/read-all`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${admin.token}`,
+        },
+      })
+      if (res.ok) {
+        fetchNotifications()
+        setShowMenu(false)
+      }
+    } catch (err) {
+      console.error('Lỗi khi cập nhật thông báo:', err)
+    }
+  }
   useEffect(() => {
     fetchStats()
   }, [fetchStats])
   useEffect(() => {
-    socket.on('update_stats', () => {
+    socket.on('new_activity', () => {
       fetchStats()
       if (fetchNotifications) fetchNotifications()
+      playNotificationSound()
     })
-    socket.on('new_activity', () => {
+    socket.on('update_stats', () => {
       fetchStats()
     })
     return () => {
-      socket.off('update_stats')
       socket.off('new_activity')
+      socket.off('update_stats')
     }
   }, [fetchStats, fetchNotifications])
   return (
@@ -68,25 +92,43 @@ export default function AdminHome() {
         <Card label="Doanh thu ngày" value={`${stats.revenue?.toLocaleString()}đ`} icon={<FaMoneyBillWave />} color="purple" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-[30px] shadow-sm">
-          <h3 className="font-black uppercase text-sm mb-5 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Hoạt động gần đây
-          </h3>
-          {notifications?.length === 0 ? (
-            <p className="text-center text-gray-300 italic py-10">Chưa có hoạt động nào...</p>
+        <div className="lg:col-span-2 bg-white p-6 rounded-[30px] shadow-sm relative">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="font-black uppercase text-sm flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Hoạt động gần đây
+            </h3>
+            <div className="relative">
+              <button onClick={() => setShowMenu(!showMenu)} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
+                <FaEllipsisV />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-xl shadow-lg z-20 overflow-hidden">
+                  <button onClick={handleReadAll} className="w-full text-left px-4 py-3 text-sm flex items-center gap-2 hover:bg-gray-50 text-gray-700 font-bold border-none bg-transparent cursor-pointer">
+                    <FaCheckDouble className="text-green-500" /> Đã xem tất cả
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          {!notifications || notifications.filter((n) => !n.isRead).length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10">
+              <p className="text-center text-gray-300 italic">Không có thông báo mới...</p>
+            </div>
           ) : (
             <div className="space-y-3">
-              {notifications?.map((n) => (
-                <Link key={n._id} to={n.type === 'order' ? '/admin/orders' : n.type === 'reservation' ? '/admin/reservations' : '/admin/feedback'} className="block no-underline">
-                  <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border transition-all hover:bg-white hover:shadow-md hover:border-green-400 group cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${n.type === 'order' ? 'bg-orange-100 text-orange-500' : n.type === 'reservation' ? 'bg-green-100 text-green-500' : 'bg-blue-100 text-blue-500'}`}>{n.type === 'order' ? <FaClipboardList /> : <FaUtensils />}</div>
-                      <p className="text-sm font-bold text-gray-700 group-hover:text-green-600 transition-colors">{n.content}</p>
+              {notifications
+                .filter((n) => !n.isRead)
+                .map((n) => (
+                  <Link key={n._id} to={n.type === 'order' ? '/admin/orders' : n.type === 'reservation' ? '/admin/reservations' : '/admin/feedbacks'} className="block no-underline">
+                    <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border transition-all hover:bg-white hover:shadow-md hover:border-green-400 group cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${n.type === 'order' ? 'bg-orange-100 text-orange-500' : n.type === 'reservation' ? 'bg-green-100 text-green-500' : 'bg-blue-100 text-blue-500'}`}>{n.type === 'order' ? <FaClipboardList /> : <FaUtensils />}</div>
+                        <p className="text-sm font-bold text-gray-700 group-hover:text-green-600 transition-colors">{n.content}</p>
+                      </div>
+                      <span className="text-[10px] text-gray-400 font-black italic uppercase">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
-                    <span className="text-[10px] text-gray-400 font-black italic uppercase">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
             </div>
           )}
         </div>

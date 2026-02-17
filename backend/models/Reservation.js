@@ -8,6 +8,6 @@ const reservationSchema = new Schema(
     status: { type: String, default: 'pending' },
     createdAt: { type: Date, default: Date.now },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 )
 export default model('reservations', reservationSchema)
