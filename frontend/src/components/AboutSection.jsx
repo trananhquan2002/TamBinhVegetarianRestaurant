@@ -37,7 +37,7 @@ export default function AboutSection() {
                 </div>
                 <div>
                   <p className="text-4xl font-black text-white">10+</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mt-2">Năm kinh</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mt-2">Năm kinh nghiệm</p>
                 </div>
                 <div>
                   <p className="text-4xl font-black text-white">100%</p>

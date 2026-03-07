@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
-import { FaHome, FaBox, FaUtensils, FaComments, FaBars, FaTimes, FaBell } from 'react-icons/fa'
+import { FaHome, FaBox, FaUtensils, FaComments, FaBars, FaTimes } from 'react-icons/fa'
 import { FiLogOut, FiUser } from 'react-icons/fi'
 import { useAuth } from './context/AuthContext'
 import io from 'socket.io-client'
