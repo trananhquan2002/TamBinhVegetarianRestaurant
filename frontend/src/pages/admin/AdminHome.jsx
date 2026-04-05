@@ -89,7 +89,6 @@ export default function AdminHome() {
     fetchStats()
   }, [fetchStats])
   useEffect(() => {
-    window.speechSynthesis.getVoices()
     socket.on('new_activity', (data) => {
       fetchStats()
       if (fetchNotifications) fetchNotifications()
