@@ -21,10 +21,14 @@ export default function AdminHome() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel()
       const text = message || 'Bạn có thông báo mới từ hệ thống Tâm Bình'
-      const msg = new SpeechSynthesisUtterance()
-      msg.text = text
+      const msg = new SpeechSynthesisUtterance(text)
+      const voices = window.speechSynthesis.getVoices()
+      const vietnameseVoice = voices.find((v) => (v.lang === 'vi-VN' || v.lang === 'vi_VN') && v.name.includes('Google')) || voices.find((v) => v.lang === 'vi-VN' || v.lang === 'vi_VN')
+      if (vietnameseVoice) {
+        msg.voice = vietnameseVoice
+      }
       msg.lang = 'vi-VN'
-      msg.rate = 1.0
+      msg.rate = 0.9
       msg.pitch = 1.0
       window.speechSynthesis.speak(msg)
     } else {
@@ -85,6 +89,7 @@ export default function AdminHome() {
     fetchStats()
   }, [fetchStats])
   useEffect(() => {
+    window.speechSynthesis.getVoices()
     socket.on('new_activity', (data) => {
       fetchStats()
       if (fetchNotifications) fetchNotifications()
