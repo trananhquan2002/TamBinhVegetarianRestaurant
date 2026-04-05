@@ -17,11 +17,20 @@ export default function AdminHome() {
   })
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef(null)
-  const audioPlayer = useRef(new Audio('/assets/sound/success-chime.mp3'))
-  const playNotificationSound = () => {
-    const audio = audioPlayer.current
-    audio.currentTime = 0
-    audio.play().catch((err) => console.log('Chờ tương tác người dùng để phát âm thanh'))
+  const playNotificationSound = (message) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      const text = message || 'Bạn có thông báo mới từ hệ thống Tâm Bình'
+      const msg = new SpeechSynthesisUtterance()
+      msg.text = text
+      msg.lang = 'vi-VN'
+      msg.rate = 1.0
+      msg.pitch = 1.0
+      window.speechSynthesis.speak(msg)
+    } else {
+      const audio = new Audio('/assets/sound/success-chime.mp3')
+      audio.play().catch((err) => console.log('Yêu cầu tương tác người dùng'))
+    }
   }
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -76,10 +85,13 @@ export default function AdminHome() {
     fetchStats()
   }, [fetchStats])
   useEffect(() => {
-    socket.on('new_activity', () => {
+    socket.on('new_activity', (data) => {
       fetchStats()
       if (fetchNotifications) fetchNotifications()
-      playNotificationSound()
+      let msg = 'Bạn có thông báo mới'
+      if (data?.type === 'order') msg = 'Bạn đã nhận được đơn hàng mới từ hệ thống Tâm Bình'
+      if (data?.type === 'reservation') msg = 'Bạn có một lịch đặt bàn mới'
+      playNotificationSound(msg)
     })
     socket.on('update_stats', () => {
       fetchStats()
