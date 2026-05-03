@@ -17,24 +17,9 @@ export default function AdminHome() {
   })
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef(null)
-  const playNotificationSound = (message) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-      const text = message || 'Bạn có thông báo mới từ hệ thống Tâm Bình'
-      const msg = new SpeechSynthesisUtterance(text)
-      const voices = window.speechSynthesis.getVoices()
-      const vietnameseVoice = voices.find((v) => (v.lang === 'vi-VN' || v.lang === 'vi_VN') && v.name.includes('Google')) || voices.find((v) => v.lang === 'vi-VN' || v.lang === 'vi_VN')
-      if (vietnameseVoice) {
-        msg.voice = vietnameseVoice
-      }
-      msg.lang = 'vi-VN'
-      msg.rate = 0.9
-      msg.pitch = 1.0
-      window.speechSynthesis.speak(msg)
-    } else {
-      const audio = new Audio('/assets/sound/success-chime.mp3')
-      audio.play().catch((err) => console.log('Yêu cầu tương tác người dùng'))
-    }
+  const playNotificationSound = () => {
+    const audio = new Audio('/assets/sound/success-chime.mp3')
+    audio.play().catch((err) => console.log('Yêu cầu tương tác người dùng'))
   }
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -92,10 +77,7 @@ export default function AdminHome() {
     socket.on('new_activity', (data) => {
       fetchStats()
       if (fetchNotifications) fetchNotifications()
-      let msg = 'Bạn có thông báo mới'
-      if (data?.type === 'order') msg = 'Bạn đã nhận được đơn hàng mới từ hệ thống Tâm Bình'
-      if (data?.type === 'reservation') msg = 'Bạn có một lịch đặt bàn mới'
-      playNotificationSound(msg)
+      playNotificationSound()
     })
     socket.on('update_stats', () => {
       fetchStats()
